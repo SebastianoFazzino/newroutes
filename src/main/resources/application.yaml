@@ -1,0 +1,62 @@
+server:
+  port: 9324
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5432/application
+    username: seb
+    password: 110492
+
+  application:
+    name: application
+
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+    hibernate:
+      ddl-auto: update
+      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
+      use-new-id-generator-mappings: false
+    properties:
+      hibernate:
+        default_schema: travel_tips
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+      org:
+        hibernate:
+          envers:
+            audit_table_suffix: _AUDIT
+            revision_field_name: REVISION_ID
+            revision_type_field_name: REVISION_TYPE
+    open-in-view: true
+
+  mvc:
+    format:
+      date: yyyy-MM-dd
+      date-time: yyyy-MM-dd HH:mm:ss
+      time: HH:mm:ss
+
+security:
+  jwt:
+    header: "Bearer "
+    claim: "roles"
+    secret: "bFiG3UI6Kx5I0kPTEC4GOEjDd2bKAUSJXsQTItQtfEcKxbBANrGQMCMi0KeV2A65e3dwMl0uryvYn62J7Fjyvk08sFVSqJchO6m"
+    access-token:
+      header: "access_token"
+      expiration-hours: 1
+    refresh-token:
+      header: "refresh_token"
+      expiration-days: 30
+    error:
+      header: "error"
+  permitted-endpoints:
+    signup: "/v1/user/signup"
+    login: "/v1/authentication/login"
+    refresh-token: "/v1/authentication/token-refresh"
+
+integrations:
+  sendinblue:
+    baseurl: "https://api.sendinblue.com/v3"
+    password: "SPNT2Q9ZcrRvmAqK"
+    apikey: "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"
+  cloudmersive:
+    baseurl: "https://api.cloudmersive.com"
+    apikey: "389a09ae-1303-4263-b5b1-5a7d08823e98"

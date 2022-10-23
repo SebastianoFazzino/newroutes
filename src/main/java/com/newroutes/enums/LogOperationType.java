@@ -1,0 +1,21 @@
+package com.newroutes.enums;
+
+public enum LogOperationType {
+
+    USER_SIGNUP,
+    USER_LOGIN,
+    USER_UPDATE,
+    USER_UNSUBSCRIBE,
+
+    TWOFA_ENABLED,
+    TWOFA_DISABLED,
+
+    EMAIL_CONFIRMED,
+    EMAIL_CHANGE_REQUEST,
+    EMAIL_CHANGED,
+
+    PASSWORD_EXPIRED,
+    PASSWORD_CHANGE_REQUEST,
+    PASSWORD_CHANGE
+
+}
