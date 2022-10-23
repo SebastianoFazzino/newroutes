@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/application
+    url: jdbc:postgresql://localhost:5432/newroutes
     username: seb
     password: 110492
 
@@ -18,7 +18,7 @@ spring:
       use-new-id-generator-mappings: false
     properties:
       hibernate:
-        default_schema: travel_tips
+        default_schema: newroutes
         dialect: org.hibernate.dialect.PostgreSQLDialect
       org:
         hibernate:
