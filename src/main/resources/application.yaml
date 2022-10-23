@@ -8,18 +8,18 @@ spring:
     password: 110492
 
   application:
-    name: application
+    name: newroutes
 
   jpa:
     database-platform: org.hibernate.dialect.PostgreSQL10Dialect
+    generate-ddl: true
     hibernate:
       ddl-auto: update
-      naming-strategy: org.hibernate.cfg.ImprovedNamingStrategy
-      use-new-id-generator-mappings: false
     properties:
       hibernate:
         default_schema: newroutes
         dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
       org:
         hibernate:
           envers:
