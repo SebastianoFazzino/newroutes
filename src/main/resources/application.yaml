@@ -9,8 +9,8 @@ spring:
 
   datasource:
     url: jdbc:postgresql://localhost:5432/newroutes
-    username: "******"
-    password: "******"
+    username: seb
+    password: 110492
 
   application:
     name: newroutes
