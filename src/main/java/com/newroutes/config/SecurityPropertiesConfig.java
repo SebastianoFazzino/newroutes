@@ -37,15 +37,6 @@ public class SecurityPropertiesConfig {
     @Value("${security.jwt.error.header}")
     private String errorHeader;
 
-    @Value("${security.permitted-endpoints.login}")
-    private String loginEndpoint;
-
-    @Value("${security.permitted-endpoints.signup}")
-    private String signupEndpoint;
-
-    @Value("${security.permitted-endpoints.refresh-token}")
-    private String refreshTokenEndpoint;
-
     public Algorithm getAlgorithm() {
         return Algorithm.HMAC256(this.getJwtSecret().getBytes());
     }

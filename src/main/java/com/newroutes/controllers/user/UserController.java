@@ -32,10 +32,15 @@ public class UserController {
         return ResponseEntity.ok(service.getAll());
     }
 
-    @PostMapping("/signup")
+    //*****************
+    // Public endpoints
+
+    @PostMapping("/public/signup")
     public ResponseEntity<User> signup(@RequestBody @Validated UserSignupData signupData) {
-        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/v1/user/signup").toUriString());
+        URI uri = URI.create(ServletUriComponentsBuilder.fromCurrentContextPath().path("/v1/user/public/signup").toUriString());
         return ResponseEntity.created(uri).body(service.signup(signupData));
     }
+
+    //*****************
 }
 

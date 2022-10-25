@@ -13,7 +13,7 @@ public class AppController {
         return "Newroutes home";
     }
 
-    @GetMapping("healthz")
+    @GetMapping("/healthz")
     public void healthz(){
         log.info("Newroutes health check");
     }

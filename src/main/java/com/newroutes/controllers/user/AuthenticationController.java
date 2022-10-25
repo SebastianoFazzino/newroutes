@@ -4,9 +4,11 @@ import com.newroutes.config.TokenUtils;
 import com.newroutes.exceptions.user.BadCredentialException;
 import com.newroutes.models.requests.AuthenticationRequest;
 import com.newroutes.models.responses.AuthenticationResponse;
+import com.newroutes.models.user.User;
 import com.newroutes.services.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -36,7 +38,7 @@ public class AuthenticationController {
     }
 
     @PostMapping("/login")
-    public AuthenticationResponse login(
+    public ResponseEntity<AuthenticationResponse> login(
             @RequestBody AuthenticationRequest authenticationRequest, HttpServletRequest request) {
 
         String username = authenticationRequest.getUsername().trim();
@@ -61,7 +63,7 @@ public class AuthenticationController {
 
             //**************************************************
 
-            return response;
+            return ResponseEntity.ok(response);
 
         } catch (AuthenticationException ex) {
             throw new BadCredentialException(String.format(

@@ -32,8 +32,6 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @RequiredArgsConstructor
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
-    @Autowired
-    private UserService userService;
 
     private final SecurityPropertiesConfig securityProps;
 
@@ -45,8 +43,8 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     )
             throws ServletException, IOException {
 
-        if ( request.getServletPath().equals(securityProps.getLoginEndpoint())
-                || request.getServletPath().equals(securityProps.getRefreshTokenEndpoint())
+        if ( request.getServletPath().equals("/v1/authentication/login")
+                || request.getServletPath().equals("/v1/authentication/token-refresh")
         ) {
             filterChain.doFilter(request, response);
 

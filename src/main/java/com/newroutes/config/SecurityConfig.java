@@ -25,9 +25,10 @@ public class SecurityConfig {
 
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
-        http.authorizeRequests().antMatchers(String.format("%s/**", securityProps.getLoginEndpoint())).permitAll();
-        http.authorizeRequests().antMatchers(String.format("%s/**", securityProps.getSignupEndpoint())).permitAll();
-        http.authorizeRequests().antMatchers(String.format("%s/**", securityProps.getRefreshTokenEndpoint())).permitAll();
+        http.authorizeRequests().antMatchers("/").permitAll();
+        http.authorizeRequests().antMatchers("/healtz").permitAll();
+        http.authorizeRequests().antMatchers("/v1/user/public/**").permitAll();
+        http.authorizeRequests().antMatchers("/v1/authentication/login").permitAll();
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilterBefore(new CustomAuthorizationFilter(securityProps), UsernamePasswordAuthenticationFilter.class);
 

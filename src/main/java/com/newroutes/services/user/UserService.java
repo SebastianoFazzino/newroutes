@@ -92,13 +92,13 @@ public class UserService implements UserDetailsService {
         //**************************************************
         // Send contact to SendinBlue
 
-        if ( newSignup ) {
-            CreateUpdateContactModel contactModel = sendinblueService.createContact(savedUser);
-            savedUser.setSendinBlueId(contactModel.getId() + "");
-
-        } else {
-            sendinblueService.updateContact(savedUser);
-        }
+//        if ( newSignup ) {
+//            CreateUpdateContactModel contactModel = sendinblueService.createContact(savedUser);
+//            savedUser.setSendinBlueId(contactModel.getId() + "");
+//
+//        } else {
+//            sendinblueService.updateContact(savedUser);
+//        }
 
         //**************************************************
 
