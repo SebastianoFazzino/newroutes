@@ -20,9 +20,9 @@ public class CloudmersiveService {
     @Value("${integrations.cloudmersive.apikey}")
     public String apiKey;
 
-    private String API_KEY_HEADER = "Apikey";
+    private final String API_KEY_HEADER = "Apikey";
 
-    private WebClient webClient;
+    private final WebClient webClient;
 
 
     public CloudmersiveService() {
