@@ -85,7 +85,7 @@ public class SendinblueService {
      */
     public CreateUpdateContactModel createContact(CreateContact createContact) {
 
-        log.info("[SIB] Creating new Contact {}", createContact);
+        log.info("[SIB] - Creating new Contact {}", createContact);
 
         try {
             return this.buildContactsApi().createContact(createContact);
@@ -103,7 +103,7 @@ public class SendinblueService {
      */
     public void updateContact(String identifier, UpdateContact updateContact) {
 
-        log.info("[SIB] Updating Contact {}", identifier);
+        log.info("[SIB] - Updating Contact {}", identifier);
 
         try {
             this.buildContactsApi().updateContact(identifier, updateContact);

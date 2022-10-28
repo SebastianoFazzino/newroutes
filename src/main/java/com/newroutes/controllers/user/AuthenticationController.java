@@ -4,7 +4,6 @@ import com.newroutes.config.TokenUtils;
 import com.newroutes.exceptions.user.BadCredentialException;
 import com.newroutes.models.requests.AuthenticationRequest;
 import com.newroutes.models.responses.AuthenticationResponse;
-import com.newroutes.models.user.User;
 import com.newroutes.services.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

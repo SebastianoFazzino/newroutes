@@ -36,7 +36,7 @@ public class CloudmersiveService {
      */
     public CloudmersiveEmailValidationResponse validateEmail(String email) {
 
-        log.info("[I] - Getting validation response for email {}", email);
+        log.info("[CM] - Getting validation response for email {}", email);
         String uri = baseUrl + "/validate/email/address/syntaxOnly";
 
         try {
