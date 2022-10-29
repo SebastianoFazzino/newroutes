@@ -165,7 +165,7 @@
         <repository>
             <id>github</id>
             <name>Newroutes Package</name>
-            <url>https://github.com/SebastianoFazzino/newroutes</url>
+            <url>https://github.com/maven/SebastianoFazzino/newroutes</url>
         </repository>
     </distributionManagement>
 
