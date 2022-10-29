@@ -10,7 +10,7 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.newroutes</groupId>
+    <groupId>com.sf</groupId>
     <artifactId>newroutes</artifactId>
     <version>0.0.2</version>
     <name>newroutes</name>
