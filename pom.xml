@@ -161,12 +161,29 @@
         </plugins>
     </build>
 
-    <distributionManagement>
+<!--    <distributionManagement>-->
+<!--        <repository>-->
+<!--            <id>github</id>-->
+<!--            <name>Newroutes Package</name>-->
+<!--            <url>https://github.com/SebastianoFazzino/newroutes</url>-->
+<!--        </repository>-->
+<!--    </distributionManagement>-->
+    <repositories>
         <repository>
-            <id>github</id>
+            <releases>
+                <enabled>false</enabled>
+                <updatePolicy>always</updatePolicy>
+                <checksumPolicy>warn</checksumPolicy>
+            </releases>
+            <snapshots>
+                <enabled>true</enabled>
+                <updatePolicy>never</updatePolicy>
+                <checksumPolicy>fail</checksumPolicy>
+            </snapshots>
+            <id>newroutes</id>
             <name>Newroutes Package</name>
-            <url>https://github.com/maven/SebastianoFazzino/newroutes</url>
+            <url>https://github.com/SebastianoFazzino/newroutes</url>
         </repository>
-    </distributionManagement>
+    </repositories>
 
 </project>
