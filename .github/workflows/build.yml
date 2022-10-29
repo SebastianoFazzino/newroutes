@@ -22,18 +22,21 @@ jobs:
           distribution: 'temurin'
 
       - name: Setup Maven settings file
-        uses: s4u/maven-settings-action@v2.7.0
+        uses: s4u/maven-settings-action@v2.5.0
         with:
-          servers: |
-            [
-              {
-                "id": "newroutes",
-                "username": "SebastianoFazzino",
-                "password": "Seby110492"
-              }
-            ]    
+          servers: '[
+                      {
+                        "id": "github",
+                        "configuration": {
+                          "httpHeaders": {
+                            "property": {
+                              "name": "Authorization",
+                              "value": "Bearer ${{ secrets.ACCESS_TOKEN }}"
+                            }
+                          }
+                        }
+                      }
+                    ]'
 
       - name: Run Pipeline
         run: mvn deploy
-        env:
-          ACCESS_TOKEN: ${{secrets.ACCESS_TOKEN}}
