@@ -1,0 +1,28 @@
+#Workflow name
+name: CI/CD Pipeline
+on:
+  #Manually trigger workflow runs
+  workflow_dispatch:
+  #Trigger the workflow on push from the branch master
+  push:
+    branches:
+      - master
+jobs:
+  build:
+    runs-on: ubuntu-latest
+      
+    steps:
+      - name: Checkout repository code
+        uses: actions/checkout@v3
+      - name: Set up JDK 17
+        uses: actions/setup-java@v3
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          server-id: github 
+          settings-path: ${{ github.workspace }}
+
+      - name: Run Pipeline
+        run: mvn deploy
+#        env:
+#          GITHUB_TOKEN: ${{ secrets.MAVEN_REPOSITORY_TOKEN }}
