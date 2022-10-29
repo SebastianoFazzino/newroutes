@@ -2,15 +2,9 @@ server:
   port: 9324
 
 spring:
-#
-#  config:
-#    activate:
-#      on-profile: "prod"
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/newroutes
-    username: seb
-    password: 110492
+    url: jdbc:postgresql://db.ygvgkodxudmsqnnpmmbh.supabase.co:5432/postgres?user=postgres&password=KPChLaC2S93QowoT
 
   application:
     name: newroutes

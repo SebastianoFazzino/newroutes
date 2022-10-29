@@ -25,7 +25,7 @@ public class SecurityConfig {
 
         http.csrf().disable();
         http.sessionManagement().sessionCreationPolicy(STATELESS);
-        http.authorizeRequests().antMatchers("/").permitAll();
+        http.authorizeRequests().antMatchers("/**").permitAll();
         http.authorizeRequests().antMatchers("/healthz").permitAll();
         http.authorizeRequests().antMatchers("/v1/user/public/**").permitAll();
         http.authorizeRequests().antMatchers("/v1/authentication/login").permitAll();
