@@ -21,6 +21,18 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
+      - name: Setup Maven settings file
+        uses: s4u/maven-settings-action@v2.7.0
+        with:
+          servers: |
+            [
+              {
+                "id": "newroutes",
+                "username": "SebastianoFazzino",
+                "password": "Seby110492"
+              }
+            ]    
+
       - name: Run Pipeline
         run: mvn deploy
         env:
