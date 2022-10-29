@@ -23,3 +23,5 @@ jobs:
 
       - name: Run Pipeline
         run: mvn deploy
+        env:
+          ACCESS_TOKEN: ${{secrets.ACCESS_TOKEN}}
