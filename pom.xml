@@ -10,11 +10,11 @@
         <relativePath/>
     </parent>
 
-    <groupId>com.example</groupId>
+    <groupId>com.newroutes</groupId>
     <artifactId>newroutes</artifactId>
     <version>0.0.2</version>
     <name>newroutes</name>
-    <description>newroutes package</description>
+    <description>newroutes mvn package</description>
 
     <properties>
         <java.version>17</java.version>
