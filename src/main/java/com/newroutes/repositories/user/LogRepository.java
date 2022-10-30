@@ -1,4 +1,4 @@
-package com.newroutes.repositories;
+package com.newroutes.repositories.user;
 
 import com.newroutes.entities.user.LogEntity;
 import org.springframework.data.jpa.repository.JpaRepository;

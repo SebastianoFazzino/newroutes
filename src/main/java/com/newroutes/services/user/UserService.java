@@ -9,7 +9,7 @@ import com.newroutes.exceptions.user.UserNotFoundException;
 import com.newroutes.models.mappers.user.UserMapper;
 import com.newroutes.models.user.User;
 import com.newroutes.models.user.UserSignupData;
-import com.newroutes.repositories.UserRepository;
+import com.newroutes.repositories.user.UserRepository;
 import com.newroutes.services.integrations.CloudmersiveService;
 import com.newroutes.services.integrations.SendinblueService;
 import lombok.RequiredArgsConstructor;
@@ -83,26 +83,37 @@ public class UserService implements UserDetailsService {
 
     public User save(User user) {
 
-        boolean newSignup = user.getId() == null;
+        boolean newSignup = user.getId() == null || user.getSendinBlueId() == null;
 
-        log.info("Saving User {}", user);
         User savedUser = userMapper.convertToDto(userRepository.save(
                 userMapper.convertToEntity(user)));
 
         //**************************************************
         // Send contact to SendinBlue
 
-//        if ( newSignup ) {
-//            CreateUpdateContactModel contactModel = sendinblueService.createContact(savedUser);
-//            savedUser.setSendinBlueId(contactModel.getId() + "");
-//
-//        } else {
-//            sendinblueService.updateContact(savedUser);
-//        }
+        if ( !newSignup ) {
 
-        //**************************************************
+            sendinblueService.updateContact(savedUser);
+            return savedUser;
 
-        return savedUser;
+        } else {
+
+            CreateUpdateContactModel contactModel = sendinblueService.createContact(savedUser);
+            savedUser.setSendinBlueId(contactModel.getId() + "");
+
+            //*********************************************
+
+            logService.addLog(
+                    savedUser.getId(),
+                    LogOperationType.SENDINBLUE_USER_CREATED,
+                    String.format("SendinBlueUser contact created with id %s", contactModel.getId())
+            );
+
+            //*********************************************
+        }
+
+        return userMapper.convertToDto(userRepository.save(
+                userMapper.convertToEntity(savedUser)));
     }
 
     public User signup(UserSignupData signupData) {

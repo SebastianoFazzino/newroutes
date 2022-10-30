@@ -3,7 +3,7 @@ package com.newroutes.services.user;
 import com.newroutes.enums.LogOperationType;
 import com.newroutes.models.mappers.user.LogMapper;
 import com.newroutes.models.user.Log;
-import com.newroutes.repositories.LogRepository;
+import com.newroutes.repositories.user.LogRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

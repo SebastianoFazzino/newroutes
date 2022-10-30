@@ -3,7 +3,7 @@ package com.newroutes.models.mappers.user;
 
 import com.newroutes.entities.user.UserEntity;
 import com.newroutes.exceptions.user.UserNotFoundException;
-import com.newroutes.repositories.UserRepository;
+import com.newroutes.repositories.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

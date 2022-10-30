@@ -3,10 +3,7 @@ package com.newroutes.entities.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.newroutes.entities.BaseEntity;
-import com.newroutes.enums.Gender;
-import com.newroutes.enums.Language;
-import com.newroutes.enums.UserClass;
-import com.newroutes.enums.UserStatus;
+import com.newroutes.enums.*;
 import com.newroutes.models.countries.CountryCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -72,6 +69,9 @@ public class UserEntity extends BaseEntity {
     private Date lastAuth;
 
     private String sendinBlueId;
+
+    @Enumerated(EnumType.STRING)
+    private NotificationReceptionLevel notificationReceptionLevel;
 
     @JsonIgnore
     @OneToMany(

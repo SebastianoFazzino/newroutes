@@ -1,16 +1,11 @@
 package com.newroutes.models.user;
 
 
-import com.newroutes.enums.Gender;
-import com.newroutes.enums.Language;
-import com.newroutes.enums.UserClass;
-import com.newroutes.enums.UserStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.newroutes.enums.*;
 import com.newroutes.models.BaseModel;
 import com.newroutes.models.countries.CountryCode;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.Date;
 import java.util.List;
@@ -25,6 +20,8 @@ public class User extends BaseModel {
 
     private String email;
 
+    @JsonIgnore
+    @ToString.Exclude
     private String password;
 
     private String firstName;
@@ -52,6 +49,8 @@ public class User extends BaseModel {
     private Date lastAuth;
 
     private String sendinBlueId;
+
+    private NotificationReceptionLevel notificationReceptionLevel = NotificationReceptionLevel.ALL;
 
     private List<UserRole> roles;
 

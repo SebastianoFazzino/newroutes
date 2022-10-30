@@ -1,8 +1,10 @@
 package com.newroutes.services.integrations;
 
+import com.newroutes.entities.SendinBlueUserEntity;
 import com.newroutes.models.mappers.SendinBlueUserMapper;
 import com.newroutes.models.sendinblue.SendinBlueUser;
 import com.newroutes.models.user.User;
+import com.newroutes.repositories.SendinblueUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,13 +19,34 @@ import sibModel.CreateUpdateContactModel;
 import sibModel.GetAccount;
 import sibModel.UpdateContact;
 
+import java.util.Optional;
+import java.util.UUID;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class SendinblueService {
 
-    private final SendinBlueUserMapper sendinBlueUserMapper;
+    private final SendinblueUserRepository repository;
+    private final SendinBlueUserMapper mapper;
 
+    //*************************************************************************
+    // CRUD region
+
+    private SendinBlueUser save(SendinBlueUser user) {
+        return mapper.convertToDto(repository.save(mapper.convertToEntity(user)));
+    }
+
+    private SendinBlueUser getOrCreate(UUID userId) {
+
+        log.info("Getting or creating SendinBlueUser by User id {}", userId);
+        Optional<SendinBlueUserEntity> optUser = repository.findByUserId(userId);
+
+        if ( optUser.isPresent() ) {
+            return mapper.convertToDto(optUser.get());
+        }
+        return new SendinBlueUser();
+    }
 
     //*************************************************************************
     // Account API
@@ -52,15 +75,22 @@ public class SendinblueService {
      */
     public CreateUpdateContactModel createContact(User user) {
 
-        SendinBlueUser sendinBlueUser = new SendinBlueUser();
-        sendinBlueUserMapper.mergeUserData(user, sendinBlueUser);
+        log.info("Creating SendinBlueUser Contact for User {}", user.getEmail());
+
+        SendinBlueUser sendinBlueUser = this.getOrCreate(user.getId());
+        mapper.mergeUserData(user, sendinBlueUser);
 
         CreateContact createContact = new CreateContact();
         createContact.setEmail(user.getEmail());
         createContact.setUpdateEnabled(true);
         createContact.setAttributes(sendinBlueUser);
 
-        return this.createContact(createContact);
+        CreateUpdateContactModel contact = this.createContact(createContact);
+
+        sendinBlueUser.setSendinBlueId(contact.getId().toString());
+        this.save(sendinBlueUser);
+
+        return contact;
     }
 
     /**
@@ -70,8 +100,11 @@ public class SendinblueService {
      */
     public void updateContact(User user) {
 
-        SendinBlueUser sendinBlueUser = new SendinBlueUser();
-        sendinBlueUserMapper.mergeUserData(user, sendinBlueUser);
+        log.info("Updating SendinBlueUser Contact for User {}", user.getEmail());
+
+        SendinBlueUser sendinBlueUser = this.getOrCreate(user.getId());
+        mapper.mergeUserData(user, sendinBlueUser);
+        this.save(sendinBlueUser);
 
         UpdateContact updateContact = new UpdateContact();
         updateContact.setAttributes(sendinBlueUser);

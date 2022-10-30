@@ -5,7 +5,7 @@ import com.newroutes.enums.UserClass;
 import com.newroutes.models.mappers.user.UserRoleMapper;
 import com.newroutes.models.user.User;
 import com.newroutes.models.user.UserRole;
-import com.newroutes.repositories.UserRoleRepository;
+import com.newroutes.repositories.user.UserRoleRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
