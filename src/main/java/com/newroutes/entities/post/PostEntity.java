@@ -1,5 +1,6 @@
 package com.newroutes.entities.post;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.newroutes.entities.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -40,8 +41,9 @@ public class PostEntity extends BaseEntity {
 
     private Integer totalReactions;
 
+    @JsonIgnore
     @OneToMany(
-            fetch = FetchType.EAGER,
+            fetch = FetchType.LAZY,
             mappedBy = "post"
     )
     private List<PostReactionEntity> reactions;

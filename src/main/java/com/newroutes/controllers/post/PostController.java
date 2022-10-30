@@ -2,7 +2,6 @@ package com.newroutes.controllers.post;
 
 import com.newroutes.enums.post.ReactionType;
 import com.newroutes.models.post.Post;
-import com.newroutes.models.post.PostReactionCounterResponse;
 import com.newroutes.services.post.PostService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -58,7 +57,7 @@ public class PostController {
     // Post reaction region
 
     @PostMapping("/react/{postId}")
-    public ResponseEntity<PostReactionCounterResponse> addReaction(
+    public ResponseEntity<Post> addReaction(
             @PathVariable("postId") UUID postId,
             @RequestParam UUID userId,
             @RequestParam ReactionType reactionType
@@ -67,7 +66,7 @@ public class PostController {
     }
 
     @DeleteMapping("/delete-reaction/{postId}")
-    public ResponseEntity<PostReactionCounterResponse> addReaction(
+    public ResponseEntity<Post> addReaction(
             @PathVariable("postId") UUID postId,
             @RequestParam UUID userId
     ) {

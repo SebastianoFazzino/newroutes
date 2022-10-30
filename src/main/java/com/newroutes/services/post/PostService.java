@@ -9,13 +9,13 @@ import com.newroutes.models.mappers.post.PostMapper;
 import com.newroutes.models.mappers.post.PostReactionMapper;
 import com.newroutes.models.post.Post;
 import com.newroutes.models.post.PostReaction;
-import com.newroutes.models.post.PostReactionCounterResponse;
 import com.newroutes.repositories.post.PostReactionRepository;
 import com.newroutes.repositories.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -98,7 +98,7 @@ public class PostService {
         return reactionMapper.convertToDto(reactionRepository.save(reactionMapper.convertToEntity(postReaction)));
     }
 
-    public PostReactionCounterResponse react(UUID postId, UUID userId, ReactionType reactionType) {
+    public Post react(UUID postId, UUID userId, ReactionType reactionType) {
 
         log.info("Adding new Post Reaction of type {} on Post '{}' for User '{}'", reactionType, postId, userId);
         PostReaction reaction = new PostReaction();
@@ -107,36 +107,44 @@ public class PostService {
         reaction.setReaction(reactionType);
 
         this.save(reaction);
-        return this.countReactions(postId);
+        return this.updateReactions(postId);
     }
 
-    public PostReactionCounterResponse deleteReaction(UUID postId, UUID userId) {
+    public Post deleteReaction(UUID postId, UUID userId) {
 
         log.info("Deleting Post Reaction on '{}' for User '{}'", postId, userId);
-        reactionRepository.deleteByPostAndUserId(postId, userId);
-        return this.countReactions(postId);
+        reactionRepository.deleteByPost_IdAndUserId(postId, userId);
+        return this.updateReactions(postId);
     }
 
-    private PostReactionCounterResponse countReactions(UUID postId) {
+    public Post updateReactions(UUID postId) {
 
         log.info("Getting reaction counter for Post {}", postId);
-        Post post = this.getById(postId);
-        List<PostReactionEntity> reactionsForPost = reactionRepository.getAllByPost(postId);
+        List<PostReactionEntity> reactionsForPost = reactionRepository.getAllByPost_Id(postId);
 
-        PostReactionCounterResponse response = new PostReactionCounterResponse();
-        response.instantiateMap();
+        Post post = this.getById(postId);
+
+        HashMap<ReactionType,Integer> reactionsMap = this.instantiateMap();
         int totalReactions = 0;
 
         for ( var reaction : reactionsForPost ) {
 
             totalReactions++;
-            int newCount = response.getReactionsMap().get(reaction.getReaction()) +1;
+            int newCount = reactionsMap.get(reaction.getReaction()) +1;
 
-            response.getReactionsMap().put(reaction.getReaction(), newCount);
+            reactionsMap.put(reaction.getReaction(), newCount);
         }
 
-        response.setPost(post);
-        response.setTotalReactions(totalReactions);
-        return response;
+        post.setReactionsCounter(reactionsMap);
+        post.setTotalReactions(totalReactions);
+        return this.save(post);
+    }
+
+    private HashMap<ReactionType,Integer> instantiateMap() {
+        HashMap<ReactionType,Integer> reactionsMap = new HashMap<>();
+        for ( var type : ReactionType.values() ) {
+            reactionsMap.put(type,0);
+        }
+        return reactionsMap;
     }
 }

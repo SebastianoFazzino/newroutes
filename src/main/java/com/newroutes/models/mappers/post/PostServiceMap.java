@@ -2,10 +2,13 @@ package com.newroutes.models.mappers.post;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.newroutes.entities.post.PostEntity;
 import com.newroutes.entities.post.PostReactionEntity;
 import com.newroutes.enums.post.ReactionType;
+import com.newroutes.exceptions.post.PostNotFoundException;
 import com.newroutes.exceptions.post.PostReactionNotFoundException;
 import com.newroutes.repositories.post.PostReactionRepository;
+import com.newroutes.repositories.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -17,24 +20,42 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class PostServiceMap {
 
-    private final PostReactionRepository repository;
+    private final PostRepository postRepository;
+    private final PostReactionRepository postReactionRepository;
     private final Gson gson = new Gson();
 
-    public PostReactionEntity map(UUID id) {
+    public PostReactionEntity mapPostReaction(UUID id) {
         if (id == null) {
             return null;
         }
-        return repository.findById(id)
+        return postReactionRepository.findById(id)
                 .orElseThrow(() ->
                         new PostReactionNotFoundException(
                                 String.format("Post Reaction not found by id '%s'", id)) );
     }
 
-    public UUID map(PostReactionEntity reaction) {
+    public UUID mapPostReaction(PostReactionEntity reaction) {
         if (reaction == null) {
             return null;
         }
         return reaction.getId();
+    }
+
+    public PostEntity mapPost(UUID id) {
+        if (id == null) {
+            return null;
+        }
+        return postRepository.findById(id)
+                .orElseThrow(() ->
+                        new PostNotFoundException(
+                                String.format("Post not found by id '%s'", id)) );
+    }
+
+    public UUID mapPost(PostEntity post) {
+        if (post == null) {
+            return null;
+        }
+        return post.getId();
     }
 
     public String map(HashMap<ReactionType,Integer> reactionsCounter) {
@@ -45,7 +66,7 @@ public class PostServiceMap {
         if ( reactionsCounter == null || reactionsCounter.equals("") ) {
             return new HashMap<>();
         }
-        Type type = new TypeToken<HashMap<String, String>>(){}.getType();
+        Type type = new TypeToken<HashMap<ReactionType,Integer>>(){}.getType();
         return gson.fromJson( reactionsCounter, type );
     }
 }
