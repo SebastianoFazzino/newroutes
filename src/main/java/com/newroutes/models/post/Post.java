@@ -1,12 +1,14 @@
 package com.newroutes.models.post;
 
-import com.newroutes.entities.post.PostReaction;
+import com.newroutes.entities.post.PostReactionEntity;
+import com.newroutes.enums.post.ReactionType;
 import com.newroutes.models.BaseModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -24,9 +26,12 @@ public class Post extends BaseModel {
 
     private String file;
 
-    private Integer likeCount = 0;
+    private List<String> tags;
 
-    public List<String> tags;
+    private HashMap<ReactionType,Integer> reactionsCounter;
 
-    private List<PostReaction> reactions;
+    private Integer totalReactions = 0;
+
+    private List<PostReactionEntity> reactions;
+
 }

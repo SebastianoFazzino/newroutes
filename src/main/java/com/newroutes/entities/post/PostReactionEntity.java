@@ -21,7 +21,7 @@ import java.util.UUID;
 @Table(name = "post_reaction", uniqueConstraints = {
         @UniqueConstraint(name = "uniqueUser", columnNames = {"userId","post_id"})
 })
-public class PostReaction extends BaseEntity {
+public class PostReactionEntity extends BaseEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -29,9 +29,11 @@ public class PostReaction extends BaseEntity {
     @Type(type="uuid-char")
     private PostEntity post;
 
+    @NotNull
     @Type(type="uuid-char")
     private UUID userId;
 
+    @NotNull
     @Enumerated(EnumType.STRING)
     private ReactionType reaction;
 

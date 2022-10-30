@@ -6,7 +6,7 @@ import com.newroutes.models.post.Post;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = PostServiceMap.class)
 public interface PostMapper extends BaseMapper<PostEntity, Post> {
 
     void mergePostData(Post source, @MappingTarget Post target);

@@ -1,6 +1,5 @@
 package com.newroutes.entities.post;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.newroutes.entities.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -28,8 +27,6 @@ public class PostEntity extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String message;
 
-    private Integer likeCount;
-
     @Lob
     private String file;
 
@@ -38,10 +35,14 @@ public class PostEntity extends BaseEntity {
     @Column(name = "tag")
     private List<String> tags;
 
-    @JsonIgnore
+    @Column(columnDefinition = "TEXT")
+    private String reactionsCounter;
+
+    private Integer totalReactions;
+
     @OneToMany(
             fetch = FetchType.EAGER,
             mappedBy = "post"
     )
-    private List<PostReaction> reactions;
+    private List<PostReactionEntity> reactions;
 }

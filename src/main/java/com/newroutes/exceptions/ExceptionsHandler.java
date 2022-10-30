@@ -1,6 +1,7 @@
 package com.newroutes.exceptions;
 
 import com.newroutes.exceptions.post.PostNotFoundException;
+import com.newroutes.exceptions.post.PostReactionNotFoundException;
 import com.newroutes.exceptions.user.BadCredentialException;
 import com.newroutes.exceptions.user.EmailNotValidException;
 import com.newroutes.exceptions.user.UserAlreadyExistsException;
@@ -52,6 +53,13 @@ public class ExceptionsHandler {
     @ExceptionHandler(PostNotFoundException.class)
     public ResponseEntity<Object> handlePostNotFoundException(
             PostNotFoundException exception) {
+        log.warn(exception.getMessage());
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(PostReactionNotFoundException.class)
+    public ResponseEntity<Object> handlePostReactionNotFoundException(
+            PostReactionNotFoundException exception) {
         log.warn(exception.getMessage());
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }
