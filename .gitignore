@@ -33,3 +33,4 @@ build/
 /Procfile
 /heroku-deploy
 /src/main/resources/application-local.yaml
+.env
