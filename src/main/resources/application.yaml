@@ -4,7 +4,7 @@ server:
 spring:
 
   datasource:
-    url: jdbc:postgresql://db.ygvgkodxudmsqnnpmmbh.supabase.co:5432/postgres?user=postgres&password=KPChLaC2S93QowoT
+    url: jdbc:postgresql://${DATABASE_URL}/postgres?user=${DATABASE_USER}&password=${DATABASE_PASSWORD}
 
   application:
     name: newroutes
@@ -40,7 +40,7 @@ security:
   jwt:
     header: "Bearer "
     claim: "roles"
-    secret: "bFiG3UI6Kx5I0kPTEC4GOEjDd2bKAUSJXsQTItQtfEcKxbBANrGQMCMi0KeV2A65e3dwMl0uryvYn62J7Fjyvk08sFVSqJchO6m"
+    secret: ${JWT_SECRET}
     access-token:
       header: "access_token"
       expiration-hours: 1
@@ -53,11 +53,11 @@ security:
 integrations:
   sendinblue:
     baseurl: "https://api.sendinblue.com/v3"
-    password: "SPNT2Q9ZcrRvmAqK"
-    apikey: "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"
+    password: ${SENDINBLUE_PASSWORD}
+    apikey: ${SENDINBLUE_APIKEY}
   cloudmersive:
     baseurl: "https://api.cloudmersive.com"
-    apikey: "389a09ae-1303-4263-b5b1-5a7d08823e98"
+    apikey: ${CLOUDMERSIVE_APIKEY}
   true_way:
     baseurl: "https://trueway-geocoding.p.rapidapi.com"
-    apikey: ${TRUEWAY_API_KEY}
+    apikey: ${TRUEWAY_APIKEY}
