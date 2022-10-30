@@ -1,4 +1,4 @@
-package com.newroutes.controllers;
+package com.newroutes.controllers.integrations;
 
 import com.newroutes.services.integrations.SendinblueService;
 import com.newroutes.services.user.UserService;

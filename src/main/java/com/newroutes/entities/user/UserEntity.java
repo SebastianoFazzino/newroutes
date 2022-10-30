@@ -73,7 +73,6 @@ public class UserEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private NotificationReceptionLevel notificationReceptionLevel;
 
-    @JsonIgnore
     @OneToMany(
             fetch = FetchType.EAGER,
             mappedBy = "user"

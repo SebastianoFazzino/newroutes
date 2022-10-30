@@ -1,4 +1,4 @@
-package com.newroutes.controllers;
+package com.newroutes.controllers.integrations;
 
 import com.newroutes.models.responses.CloudmersiveEmailValidationResponse;
 import com.newroutes.services.integrations.CloudmersiveService;

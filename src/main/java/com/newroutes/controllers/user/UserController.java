@@ -23,12 +23,12 @@ public class UserController {
 
     private final UserService service;
 
-    @GetMapping("id/{id}")
+    @GetMapping("/id/{id}")
     public ResponseEntity<User> getById(@PathVariable("id") UUID id) {
         return ResponseEntity.ok(service.getById(id));
     }
 
-    @GetMapping("all")
+    @GetMapping("/all")
     public ResponseEntity<List<User>> getById() {
         return ResponseEntity.ok(service.getAll());
     }

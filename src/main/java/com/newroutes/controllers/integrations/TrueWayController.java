@@ -1,4 +1,4 @@
-package com.newroutes.controllers;
+package com.newroutes.controllers.integrations;
 
 
 import com.newroutes.models.responses.trueway.GeocodingResponse;
