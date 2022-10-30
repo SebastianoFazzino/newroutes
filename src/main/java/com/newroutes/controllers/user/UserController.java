@@ -1,5 +1,6 @@
 package com.newroutes.controllers.user;
 
+import com.newroutes.models.countries.CountryCode;
 import com.newroutes.models.user.User;
 import com.newroutes.models.user.UserSignupData;
 import com.newroutes.services.user.UserService;
@@ -30,6 +31,14 @@ public class UserController {
     @GetMapping("all")
     public ResponseEntity<List<User>> getById() {
         return ResponseEntity.ok(service.getAll());
+    }
+
+    @PostMapping("/country/set/{userId}")
+    public ResponseEntity<User> setCountry(
+            @PathVariable("userId") UUID userId,
+            @RequestParam CountryCode countryCode
+    ) {
+        return ResponseEntity.ok(service.setCountry(userId, countryCode));
     }
 
     //*****************

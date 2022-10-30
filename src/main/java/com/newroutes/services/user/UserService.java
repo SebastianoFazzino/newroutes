@@ -6,6 +6,7 @@ import com.newroutes.enums.LoginSource;
 import com.newroutes.exceptions.user.EmailNotValidException;
 import com.newroutes.exceptions.user.UserAlreadyExistsException;
 import com.newroutes.exceptions.user.UserNotFoundException;
+import com.newroutes.models.countries.CountryCode;
 import com.newroutes.models.mappers.user.UserMapper;
 import com.newroutes.models.user.User;
 import com.newroutes.models.user.UserSignupData;
@@ -174,6 +175,15 @@ public class UserService implements UserDetailsService {
                 LogOperationType.USER_LOGIN,
                 "New login from application " + loginSource
         );
+    }
+
+    public User setCountry(UUID userId, CountryCode countryCode) {
+
+        log.info("Setting User '{}' Country as {}", userId, countryCode);
+
+        User user = this.getById(userId);
+        user.setCountry(countryCode);
+        return this.save(user);
     }
 
     //***********************************************************
