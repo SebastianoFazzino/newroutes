@@ -60,5 +60,5 @@ integrations:
     apikey: "389a09ae-1303-4263-b5b1-5a7d08823e98"
   true_way:
     baseurl: "https://trueway-geocoding.p.rapidapi.com"
-    apikey: ${{ secrets.APIKEY }}
+    apikey: ${{ variables.APIKEY }}
 #    apikey: "673c0c2657msh496ba5000ebbe42p1a944cjsnd0fa69e71bb2"
