@@ -39,6 +39,4 @@ jobs:
                     ]'
 
       - name: Run Pipeline
-        script:
-          - export spring_profiles_active=cicd
         run: mvn deploy -DskipTests
