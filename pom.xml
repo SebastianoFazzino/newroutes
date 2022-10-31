@@ -12,7 +12,7 @@
 
     <groupId>com.sf</groupId>
     <artifactId>newroutes</artifactId>
-    <version>0.0.5</version>
+    <version>0.0.6</version>
     <name>newroutes</name>
     <description>newroutes mvn package</description>
 
