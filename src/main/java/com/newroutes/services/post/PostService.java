@@ -2,7 +2,6 @@ package com.newroutes.services.post;
 
 
 import com.newroutes.entities.post.PostEntity;
-import com.newroutes.entities.post.PostReactionEntity;
 import com.newroutes.enums.post.ReactionType;
 import com.newroutes.exceptions.post.PostNotFoundException;
 import com.newroutes.models.mappers.post.PostMapper;
@@ -14,6 +13,7 @@ import com.newroutes.repositories.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -59,7 +59,10 @@ public class PostService {
         return mapper.convertToDto(repository.save(mapper.convertToEntity(post)));
     }
 
-    public void delete(Post post) {
+    @Transactional
+    public void delete(UUID postId) {
+
+        Post post = this.getById(postId);
 
         log.info("Deleting post {}", post);
         repository.delete(mapper.convertToEntity(post));
@@ -89,7 +92,6 @@ public class PostService {
                 .collect(Collectors.toList());
     }
 
-
     // ********************************************************************
     // Post reaction region
 
@@ -107,44 +109,34 @@ public class PostService {
         reaction.setReaction(reactionType);
 
         this.save(reaction);
-        return this.updateReactions(postId);
+        return this.updateReactions(postId, reactionType, false);
     }
 
+    @Transactional
     public Post deleteReaction(UUID postId, UUID userId) {
 
-        log.info("Deleting Post Reaction on '{}' for User '{}'", postId, userId);
+        ReactionType reactionType = reactionRepository.getByPost_IdAndUserId(postId, userId).getReaction();
+
+        log.info("Deleting Post Reaction of type {} on Post '{}' for User '{}'", reactionType, postId, userId);
         reactionRepository.deleteByPost_IdAndUserId(postId, userId);
-        return this.updateReactions(postId);
+        return this.updateReactions(postId, reactionType, true);
     }
 
-    public Post updateReactions(UUID postId) {
+    public Post updateReactions(UUID postId, ReactionType reactionType, boolean subtract) {
 
-        log.info("Getting reaction counter for Post {}", postId);
-        List<PostReactionEntity> reactionsForPost = reactionRepository.getAllByPost_Id(postId);
+        log.info("Updating reaction counter for Post {}", postId);
 
         Post post = this.getById(postId);
+        HashMap<ReactionType,Integer> reactionsCounter = post.getReactionsCounter();
 
-        HashMap<ReactionType,Integer> reactionsMap = this.instantiateMap();
-        int totalReactions = 0;
+        // update reaction counter and total reactions
+        int totalReactions = subtract ? post.getTotalReactions() -1 : post.getTotalReactions() +1;
+        int newCounterForReactionType = subtract ? reactionsCounter.get(reactionType) -1 : reactionsCounter.get(reactionType) +1;
+        reactionsCounter.put(reactionType, newCounterForReactionType);
 
-        for ( var reaction : reactionsForPost ) {
-
-            totalReactions++;
-            int newCount = reactionsMap.get(reaction.getReaction()) +1;
-
-            reactionsMap.put(reaction.getReaction(), newCount);
-        }
-
-        post.setReactionsCounter(reactionsMap);
+        post.setReactionsCounter(reactionsCounter);
         post.setTotalReactions(totalReactions);
         return this.save(post);
     }
 
-    private HashMap<ReactionType,Integer> instantiateMap() {
-        HashMap<ReactionType,Integer> reactionsMap = new HashMap<>();
-        for ( var type : ReactionType.values() ) {
-            reactionsMap.put(type,0);
-        }
-        return reactionsMap;
-    }
 }

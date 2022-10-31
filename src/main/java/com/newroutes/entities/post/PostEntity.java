@@ -44,7 +44,8 @@ public class PostEntity extends BaseEntity {
     @JsonIgnore
     @OneToMany(
             fetch = FetchType.LAZY,
-            mappedBy = "post"
+            mappedBy = "post",
+            cascade = CascadeType.ALL
     )
     private List<PostReactionEntity> reactions;
 }

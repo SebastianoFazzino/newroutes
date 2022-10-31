@@ -47,9 +47,9 @@ public class PostController {
         return ResponseEntity.ok(service.update(post));
     }
 
-    @DeleteMapping("/delete")
-    public void delete(@RequestBody Post post) {
-        service.delete(post);
+    @DeleteMapping("/delete/{postId}")
+    public void delete(@PathVariable("postId") UUID postId) {
+        service.delete(postId);
         ResponseEntity.ok();
     }
 

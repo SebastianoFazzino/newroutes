@@ -10,6 +10,8 @@ import java.util.UUID;
 @Repository
 public interface PostReactionRepository extends JpaRepository<PostReactionEntity, UUID> {
 
+    PostReactionEntity getByPost_IdAndUserId(UUID postId, UUID UserId);
+
     List<PostReactionEntity> getAllByPost_Id(UUID postId);
 
     void deleteByPost_IdAndUserId(UUID postId, UUID UserId);

@@ -27,10 +27,19 @@ public class Post extends BaseModel {
 
     private List<String> tags;
 
-    private HashMap<ReactionType,Integer> reactionsCounter;
+    private HashMap<ReactionType,Integer> reactionsCounter = this.instantiateMap();
 
     private Integer totalReactions = 0;
 
     private List<PostReaction> reactions;
+
+
+    private HashMap<ReactionType,Integer> instantiateMap() {
+        this.reactionsCounter = new HashMap<>();
+        for ( var type : ReactionType.values() ) {
+            reactionsCounter.put(type,0);
+        }
+        return reactionsCounter;
+    }
 
 }
