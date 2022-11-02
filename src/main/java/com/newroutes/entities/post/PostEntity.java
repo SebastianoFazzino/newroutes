@@ -1,6 +1,5 @@
 package com.newroutes.entities.post;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.newroutes.entities.BaseEntity;
 import lombok.AllArgsConstructor;
 import lombok.Data;
