@@ -20,11 +20,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Table(name = "users", uniqueConstraints = {
+@Table(name = "users",
+        uniqueConstraints = {
         @UniqueConstraint(name = "uniqueUsername", columnNames = {"username"}),
         @UniqueConstraint(name = "uniqueEmail", columnNames = {"email"}),
         @UniqueConstraint(name = "uniqueAuthToken", columnNames = {"authToken"}),
-        @UniqueConstraint(name = "uniqueSendinBlueId", columnNames = {"sendinBlueId"}),
+        @UniqueConstraint(name = "uniqueSendinBlueId", columnNames = {"sendinBlueId"})
 })
 public class UserEntity extends BaseEntity {
 

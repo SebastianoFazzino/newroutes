@@ -1,6 +1,7 @@
 package com.newroutes.controllers.post;
 
 import com.newroutes.enums.post.ReactionType;
+import com.newroutes.models.post.Comment;
 import com.newroutes.models.post.Post;
 import com.newroutes.services.post.PostService;
 import lombok.RequiredArgsConstructor;
@@ -73,4 +74,27 @@ public class PostController {
         return ResponseEntity.ok(service.deleteReaction(postId, userId));
     }
 
+     // ********************************************************************
+    // Comment region
+
+    @GetMapping("/get-for-post/{commentId}")
+    public ResponseEntity<List<Comment>> getAllForPost(@PathVariable("commentId") UUID commentId) {
+        return ResponseEntity.ok(service.getAllForPost(commentId));
+    }
+
+    @PostMapping("/add-comment")
+    public ResponseEntity<Comment> addComment(@RequestBody Comment comment) {
+        return ResponseEntity.ok(service.addToPost(comment));
+    }
+
+    @PostMapping("/update-comment")
+    public ResponseEntity<Comment> updateComment(@RequestBody Comment comment) {
+        return ResponseEntity.ok(service.updateComment(comment));
+    }
+
+    @DeleteMapping("/delete-comment/{commentId}")
+    public void deleteComment(@PathVariable("commentId") UUID commentId) {
+        service.deleteComment(commentId);
+        ResponseEntity.ok();
+    }
 }

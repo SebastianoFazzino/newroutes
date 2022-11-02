@@ -1,13 +1,18 @@
 package com.newroutes.services.post;
 
 
+import com.newroutes.entities.post.CommentEntity;
 import com.newroutes.entities.post.PostEntity;
 import com.newroutes.enums.post.ReactionType;
+import com.newroutes.exceptions.post.CommentNotFoundException;
 import com.newroutes.exceptions.post.PostNotFoundException;
+import com.newroutes.models.mappers.post.CommentMapper;
 import com.newroutes.models.mappers.post.PostMapper;
 import com.newroutes.models.mappers.post.PostReactionMapper;
+import com.newroutes.models.post.Comment;
 import com.newroutes.models.post.Post;
 import com.newroutes.models.post.PostReaction;
+import com.newroutes.repositories.post.CommentRepository;
 import com.newroutes.repositories.post.PostReactionRepository;
 import com.newroutes.repositories.post.PostRepository;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +35,8 @@ public class PostService {
     private final PostRepository repository;
     private final PostReactionMapper reactionMapper;
     private final PostReactionRepository reactionRepository;
+    private final CommentMapper commentMapper;
+    private final CommentRepository commentRepository;
 
     // ********************************************************************
     // Post CRUD region
@@ -37,12 +44,11 @@ public class PostService {
     public Post getById(UUID id) {
 
         log.info("Getting post by id {}", id);
-        Optional<PostEntity> optExistingPost = repository.findById(id);
+        PostEntity post = repository.findById(id)
+                .orElseThrow(() -> new PostNotFoundException(
+                        String.format("Post not found by id '%s'", id)));
 
-        if ( optExistingPost.isPresent() ) {
-            return mapper.convertToDto(optExistingPost.get());
-        }
-        throw new PostNotFoundException(String.format("Post not found by id '%s'", id));
+        return mapper.convertToDto(post);
     }
 
     public List<Post> getAll() {
@@ -137,6 +143,66 @@ public class PostService {
         post.setReactionsCounter(reactionsCounter);
         post.setTotalReactions(totalReactions);
         return this.save(post);
+    }
+
+    // ********************************************************************
+    // Comments region
+
+    public Comment save(Comment comment) {
+
+        log.info("Saving Comment {}", comment);
+        return commentMapper.convertToDto(
+                commentRepository.save(commentMapper.convertToEntity(comment)));
+    }
+
+    public Comment getCommentById(UUID commentId) {
+
+        log.info("Getting Comment by id {}", commentId);
+
+        CommentEntity comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException(
+                        String.format("Comment not found by id '%s'", commentId)));
+
+        return commentMapper.convertToDto(comment);
+    }
+
+    public List<Comment> getAllForPost(UUID postId) {
+
+        log.info("Getting all Comments for Post {}", postId);
+        return commentRepository.getAllByPost_Id(postId)
+                .stream().map(commentMapper::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    public Comment addToPost(Comment comment) {
+
+        log.info("Adding new Comment '{}' to Post {}", comment.getMessage(), comment.getPostId());
+        return this.save(comment);
+    }
+
+    public Comment updateComment(Comment comment) {
+
+        log.info("Requested update Comment {}", comment.getId());
+        Optional<CommentEntity> optComment = commentRepository.findById(comment.getId());
+
+        if (optComment.isPresent()) {
+
+            Comment existingComment = commentMapper.convertToDto(optComment.get());
+
+            log.info("Updating existing Comment {}", existingComment);
+            commentMapper.mergePostData(comment, existingComment);
+            return this.save(existingComment);
+        }
+        return this.save(comment);
+    }
+
+    @Transactional
+    public void deleteComment(UUID commentId) {
+
+        Comment comment = this.getCommentById(commentId);
+
+        log.info("Deleting comment '{}'", comment);
+        commentRepository.delete(commentMapper.convertToEntity(comment));
     }
 
 }

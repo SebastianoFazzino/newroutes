@@ -1,5 +1,6 @@
 package com.newroutes.exceptions;
 
+import com.newroutes.exceptions.post.CommentNotFoundException;
 import com.newroutes.exceptions.post.PostNotFoundException;
 import com.newroutes.exceptions.post.PostReactionNotFoundException;
 import com.newroutes.exceptions.user.BadCredentialException;
@@ -60,6 +61,13 @@ public class ExceptionsHandler {
     @ExceptionHandler(PostReactionNotFoundException.class)
     public ResponseEntity<Object> handlePostReactionNotFoundException(
             PostReactionNotFoundException exception) {
+        log.warn(exception.getMessage());
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ResponseEntity<Object> handleCommentNotFoundException(
+            CommentNotFoundException exception) {
         log.warn(exception.getMessage());
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.NOT_FOUND);
     }

@@ -54,12 +54,11 @@ public class UserService implements UserDetailsService {
     public User getById(UUID userId) {
 
         log.info("Getting User by id {}", userId);
-        Optional<UserEntity> entity = userRepository.findById(userId);
 
-        if ( entity.isPresent() ) {
-            return userMapper.convertToDto(entity.get());
-        }
-        throw new UserNotFoundException(String.format("User not found by id '%s'", userId));
+        UserEntity user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserNotFoundException(String.format("User not found by id '%s'", userId)));
+
+        return userMapper.convertToDto(user);
     }
 
     public User getByUsername(String username) {

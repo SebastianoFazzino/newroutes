@@ -1,5 +1,6 @@
 package com.newroutes.models.post;
 
+import com.newroutes.entities.post.CommentEntity;
 import com.newroutes.enums.post.ReactionType;
 import com.newroutes.models.BaseModel;
 import lombok.AllArgsConstructor;
@@ -32,6 +33,8 @@ public class Post extends BaseModel {
     private Integer totalReactions = 0;
 
     private List<PostReaction> reactions;
+
+    private List<CommentEntity> comments;
 
 
     private HashMap<ReactionType,Integer> instantiateMap() {

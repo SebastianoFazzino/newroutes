@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,14 +18,18 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Table(name = "post")
+@Table(name = "post", indexes= {
+        @Index(name = "userIndex", columnList="userId")
+})
 public class PostEntity extends BaseEntity {
 
     @Type(type="uuid-char")
     private UUID userId;
 
+    @NotNull
     private String title;
 
+    @NotNull
     @Column(columnDefinition = "TEXT")
     private String message;
 
@@ -41,11 +46,18 @@ public class PostEntity extends BaseEntity {
 
     private Integer totalReactions;
 
-    @JsonIgnore
+    @OneToMany(
+            fetch = FetchType.EAGER,
+            mappedBy = "post",
+            cascade = CascadeType.ALL
+    )
+    private List<PostReactionEntity> reactions;
+
     @OneToMany(
             fetch = FetchType.LAZY,
             mappedBy = "post",
             cascade = CascadeType.ALL
     )
-    private List<PostReactionEntity> reactions;
+    private List<CommentEntity> comments;
+
 }
