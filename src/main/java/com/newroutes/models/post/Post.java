@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
@@ -17,6 +18,8 @@ import java.util.UUID;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 public class Post extends BaseModel {
+
+    private String author;
 
     private UUID userId;
 
@@ -32,9 +35,9 @@ public class Post extends BaseModel {
 
     private Integer totalReactions = 0;
 
-    private List<PostReaction> reactions;
+    private List<PostReaction> reactions = new ArrayList<>();
 
-    private List<CommentEntity> comments;
+    private List<CommentEntity> comments = new ArrayList<>();
 
 
     private HashMap<ReactionType,Integer> instantiateMap() {

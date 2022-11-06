@@ -22,6 +22,9 @@ import java.util.UUID;
 })
 public class PostEntity extends BaseEntity {
 
+    @NotNull
+    private String author;
+
     @Type(type="uuid-char")
     private UUID userId;
 
@@ -32,7 +35,7 @@ public class PostEntity extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String message;
 
-    @Lob
+    @Column(columnDefinition = "TEXT")
     private String file;
 
     @ElementCollection

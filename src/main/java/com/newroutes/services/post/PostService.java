@@ -62,6 +62,7 @@ public class PostService {
     public Post save(Post post) {
 
         log.info("Saving post {}", post);
+        post.setUserId(UUID.randomUUID());
         return mapper.convertToDto(repository.save(mapper.convertToEntity(post)));
     }
 
