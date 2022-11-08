@@ -43,9 +43,9 @@ public class PostController {
         return ResponseEntity.ok(service.getByUserId(userId));
     }
 
-    @PostMapping("/update")
-    public ResponseEntity<Post> update(@RequestBody Post post) {
-        return ResponseEntity.ok(service.update(post));
+    @PatchMapping("/update/{id}")
+    public ResponseEntity<Post> update(@PathVariable UUID id, @RequestBody Post post) {
+        return ResponseEntity.ok(service.update(id, post));
     }
 
     @DeleteMapping("/delete/{postId}")

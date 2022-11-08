@@ -75,10 +75,10 @@ public class PostService {
         repository.delete(mapper.convertToEntity(post));
     }
 
-    public Post update(Post post) {
+    public Post update(UUID id, Post post) {
 
-        log.info("Requested update post {}", post.getId());
-        Optional<PostEntity> optExistingPost = repository.findById(post.getId());
+        log.info("Requested update post {}", id);
+        Optional<PostEntity> optExistingPost = repository.findById(id);
 
         if ( optExistingPost.isPresent() ) {
 
