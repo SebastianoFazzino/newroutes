@@ -3,10 +3,7 @@ package com.newroutes.models.post;
 import com.newroutes.entities.post.CommentEntity;
 import com.newroutes.enums.post.ReactionType;
 import com.newroutes.models.BaseModel;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +24,7 @@ public class Post extends BaseModel {
 
     private String message;
 
+    @ToString.Exclude
     private String file;
 
     private List<String> tags;
