@@ -1,6 +1,5 @@
 package com.newroutes.controllers.post;
 
-import com.newroutes.enums.post.ReactionType;
 import com.newroutes.models.post.Comment;
 import com.newroutes.models.post.Post;
 import com.newroutes.services.post.PostService;
@@ -48,30 +47,16 @@ public class PostController {
         return ResponseEntity.ok(service.update(id, post));
     }
 
+
+    @PatchMapping("/add-reaction/{id}")
+    public ResponseEntity<Post> addReaction(@PathVariable UUID id) {
+        return ResponseEntity.ok(service.addReaction(id));
+    }
+
     @DeleteMapping("/delete/{postId}")
     public void delete(@PathVariable("postId") UUID postId) {
         service.delete(postId);
         ResponseEntity.ok();
-    }
-
-    // ********************************************************************
-    // Post reaction region
-
-    @PostMapping("/react/{postId}")
-    public ResponseEntity<Post> addReaction(
-            @PathVariable("postId") UUID postId,
-            @RequestParam UUID userId,
-            @RequestParam ReactionType reactionType
-    ) {
-        return ResponseEntity.ok(service.react(postId, userId, reactionType));
-    }
-
-    @DeleteMapping("/delete-reaction/{postId}")
-    public ResponseEntity<Post> addReaction(
-            @PathVariable("postId") UUID postId,
-            @RequestParam UUID userId
-    ) {
-        return ResponseEntity.ok(service.deleteReaction(postId, userId));
     }
 
      // ********************************************************************

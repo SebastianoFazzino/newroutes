@@ -3,24 +3,19 @@ package com.newroutes.services.post;
 
 import com.newroutes.entities.post.CommentEntity;
 import com.newroutes.entities.post.PostEntity;
-import com.newroutes.enums.post.ReactionType;
 import com.newroutes.exceptions.post.CommentNotFoundException;
 import com.newroutes.exceptions.post.PostNotFoundException;
 import com.newroutes.models.mappers.post.CommentMapper;
 import com.newroutes.models.mappers.post.PostMapper;
-import com.newroutes.models.mappers.post.PostReactionMapper;
 import com.newroutes.models.post.Comment;
 import com.newroutes.models.post.Post;
-import com.newroutes.models.post.PostReaction;
 import com.newroutes.repositories.post.CommentRepository;
-import com.newroutes.repositories.post.PostReactionRepository;
 import com.newroutes.repositories.post.PostRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -33,8 +28,6 @@ public class PostService {
 
     private final PostMapper mapper;
     private final PostRepository repository;
-    private final PostReactionMapper reactionMapper;
-    private final PostReactionRepository reactionRepository;
     private final CommentMapper commentMapper;
     private final CommentRepository commentRepository;
 
@@ -91,59 +84,21 @@ public class PostService {
         return this.save(post);
     }
 
+    public Post addReaction(UUID postId) {
+
+        log.info("Adding a reaction to post {}", postId);
+
+        Post post = this.getById(postId);
+        post.setTotalReactions(post.getTotalReactions() != null ? post.getTotalReactions() +1 : 1);
+        return this.save(post);
+    }
+
     public List<Post> getByUserId(UUID userId) {
 
         log.info("Getting all posts for User {}", userId);
         return repository.findAllByUserId(userId)
                 .stream().map(mapper::convertToDto)
                 .collect(Collectors.toList());
-    }
-
-    // ********************************************************************
-    // Post reaction region
-
-    private PostReaction save(PostReaction postReaction) {
-        log.info("Saving PostReaction {}", postReaction);
-        return reactionMapper.convertToDto(reactionRepository.save(reactionMapper.convertToEntity(postReaction)));
-    }
-
-    public Post react(UUID postId, UUID userId, ReactionType reactionType) {
-
-        log.info("Adding new Post Reaction of type {} on Post '{}' for User '{}'", reactionType, postId, userId);
-        PostReaction reaction = new PostReaction();
-        reaction.setPostId(postId);
-        reaction.setUserId(userId);
-        reaction.setReaction(reactionType);
-
-        this.save(reaction);
-        return this.updateReactions(postId, reactionType, false);
-    }
-
-    @Transactional
-    public Post deleteReaction(UUID postId, UUID userId) {
-
-        ReactionType reactionType = reactionRepository.getByPost_IdAndUserId(postId, userId).getReaction();
-
-        log.info("Deleting Post Reaction of type {} on Post '{}' for User '{}'", reactionType, postId, userId);
-        reactionRepository.deleteByPost_IdAndUserId(postId, userId);
-        return this.updateReactions(postId, reactionType, true);
-    }
-
-    public Post updateReactions(UUID postId, ReactionType reactionType, boolean subtract) {
-
-        log.info("Updating reaction counter for Post {}", postId);
-
-        Post post = this.getById(postId);
-        HashMap<ReactionType,Integer> reactionsCounter = post.getReactionsCounter();
-
-        // update reaction counter and total reactions
-        int totalReactions = subtract ? post.getTotalReactions() -1 : post.getTotalReactions() +1;
-        int newCounterForReactionType = subtract ? reactionsCounter.get(reactionType) -1 : reactionsCounter.get(reactionType) +1;
-        reactionsCounter.put(reactionType, newCounterForReactionType);
-
-        post.setReactionsCounter(reactionsCounter);
-        post.setTotalReactions(totalReactions);
-        return this.save(post);
     }
 
     // ********************************************************************

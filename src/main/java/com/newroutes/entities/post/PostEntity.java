@@ -43,17 +43,7 @@ public class PostEntity extends BaseEntity {
     @Column(name = "tag")
     private List<String> tags;
 
-    @Column(columnDefinition = "TEXT")
-    private String reactionsCounter;
-
     private Integer totalReactions;
-
-    @OneToMany(
-            fetch = FetchType.EAGER,
-            mappedBy = "post",
-            cascade = CascadeType.ALL
-    )
-    private List<PostReactionEntity> reactions;
 
     @OneToMany(
             fetch = FetchType.LAZY,
