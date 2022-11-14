@@ -40,3 +40,10 @@ jobs:
 
       - name: Run Pipeline
         run: mvn deploy -DskipTests
+
+
+      - name: Delete older versions
+        uses: actions/delete-package-versions@v3
+        with:
+            package-name: 'com.sf.newroutes'
+            min-versions-to-keep: 2
