@@ -3,6 +3,9 @@ server:
 
 spring:
 
+  profiles:
+    active: "prod"
+
   datasource:
     url: jdbc:postgresql://${DATABASE_URL}/postgres?user=${DATABASE_USER}&password=${DATABASE_PASSWORD}
 

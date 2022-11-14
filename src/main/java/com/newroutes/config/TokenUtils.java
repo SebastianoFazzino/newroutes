@@ -36,7 +36,7 @@ public class TokenUtils {
     UserService userService;
 
     @Autowired
-    SecurityPropertiesConfig securityProps;
+    SecurityConfig securityProps;
 
 
     public AuthenticationResponse createAuthenticationResponse(

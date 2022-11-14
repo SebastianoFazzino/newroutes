@@ -1,64 +1,67 @@
 package com.newroutes.config;
 
-
-import org.springframework.beans.factory.annotation.Autowired;
+import com.auth0.jwt.algorithms.Algorithm;
+import lombok.Data;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
+@Data
 @Configuration
-@EnableWebSecurity
 public class SecurityConfig {
 
-    @Autowired
-    SecurityPropertiesConfig securityProps;
+    @Value("${security.jwt.header}")
+    private String jwtHeader;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    @Value("${security.jwt.claim}")
+    private String jwtClaim;
 
-        http.cors();
-        http.csrf().disable();
-        http.sessionManagement().sessionCreationPolicy(STATELESS);
-        http.authorizeRequests().antMatchers("/**").permitAll();
-        http.authorizeRequests().antMatchers("/healthz").permitAll();
-        http.authorizeRequests().antMatchers("/v1/user/public/**").permitAll();
-        http.authorizeRequests().antMatchers("/v1/authentication/login").permitAll();
-        http.authorizeRequests().anyRequest().authenticated();
-        http.addFilterBefore(new CustomAuthorizationFilter(securityProps), UsernamePasswordAuthenticationFilter.class);
+    @Value("${security.jwt.secret}")
+    private String jwtSecret;
 
-        return http.build();
+    @Value("${security.jwt.access-token.header}")
+    private String accessTokenHeader;
+
+    @Value("${security.jwt.access-token.expiration-hours}")
+    private int accessTokenExpiration;
+
+    @Value("${security.jwt.refresh-token.header}")
+    private String refreshTokenHeader;
+
+    @Value("${security.jwt.refresh-token.expiration-days}")
+    private int refreshTokenExpiration;
+
+    @Value("${security.jwt.error.header}")
+    private String errorHeader;
+
+    public Algorithm getAlgorithm() {
+        return Algorithm.HMAC256(this.getJwtSecret().getBytes());
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("*");
-        configuration.addAllowedMethod("*");
-        configuration.addAllowedHeader("*");
-        configuration.addExposedHeader(securityProps.getJwtHeader());
+    public BCryptPasswordEncoder bCryptPasswordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
+    @Bean
+    @Profile("local")
+    public CustomAuthorizationFilter customAuthorizationFilterLocal() {
+        return new CustomAuthorizationFilter(this, true);
+    }
+
+    @Bean
+    @Profile("!local")
+    public CustomAuthorizationFilter customAuthorizationFilter() {
+        return new CustomAuthorizationFilter(this, false);
     }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    @Bean
-    public CustomAuthorizationFilter customAuthorizationFilter() {
-        return new CustomAuthorizationFilter(securityProps);
     }
 }

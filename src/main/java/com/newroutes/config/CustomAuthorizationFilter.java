@@ -4,7 +4,7 @@ import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import lombok.RequiredArgsConstructor;
+import com.newroutes.models.security.AuthenticationDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -27,11 +27,16 @@ import static org.springframework.http.HttpStatus.FORBIDDEN;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
-@RequiredArgsConstructor
 public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
+    private final SecurityConfig securityProps;
 
-    private final SecurityPropertiesConfig securityProps;
+    private final boolean allowAnonymousAccess;
+
+    public CustomAuthorizationFilter(SecurityConfig securityProps, boolean allowAnonymousAccess) {
+        this.securityProps = securityProps;
+        this.allowAnonymousAccess = allowAnonymousAccess;
+    }
 
     @Override
     protected void doFilterInternal(
@@ -41,7 +46,11 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
     )
             throws ServletException, IOException {
 
-        if ( request.getServletPath().equals("/v1/authentication/login")
+        if ( allowAnonymousAccess ) {
+            this.authenticateAsAnonymous();
+        }
+
+        if (  request.getServletPath().equals("/v1/authentication/login")
                 || request.getServletPath().equals("/v1/authentication/token-refresh")
         ) {
             filterChain.doFilter(request, response);
@@ -86,6 +95,23 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
             }
         }
+    }
+
+    private boolean authenticateAsAnonymous() {
+
+        log.debug("Received Request without any token, will be do auto auth");
+
+        UsernamePasswordAuthenticationToken authentication =
+                new UsernamePasswordAuthenticationToken(
+                        null,
+                        null,
+                        null
+                );
+
+        authentication.setDetails(new AuthenticationDetails(null));
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+
+        return true;
     }
 
     private void generateErrorHeader(HttpServletResponse response, Exception exception)
