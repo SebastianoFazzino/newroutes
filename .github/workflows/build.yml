@@ -43,7 +43,7 @@ jobs:
 
 
       - name: Delete workflow runs
-        uses: SebastianoFazzino/delete-workflow-runs@v3
+        uses: SebastianoFazzino/delete-workflow-runs@v2
         with:
           token: ${{ github.token }}
           repository: SebastianoFazzino/newroutes
