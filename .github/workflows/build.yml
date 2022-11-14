@@ -41,6 +41,11 @@ jobs:
       - name: Run Pipeline
         run: mvn deploy -DskipTests
 
+      - name: Delete workflow runs
+        uses: actions/delete-workflow-runs@v3
+        with:
+          token: ${{ secrets.ACCESS_TOKEN }}
+          repository: 'newroutes'
 
       - name: Delete older versions
         uses: actions/delete-package-versions@v3
