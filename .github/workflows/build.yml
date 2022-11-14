@@ -41,13 +41,12 @@ jobs:
       - name: Run Pipeline
         run: mvn deploy -DskipTests
 
-
-      - name: Delete workflow runs
+      - name: Delete old workflow runs
         uses: Mattraks/delete-workflow-runs@v2
         with:
           token: ${{ github.token }}
           repository: SebastianoFazzino/newroutes
-          retain_days: 30
+          retain_days: 10
           keep_minimum_runs: 5
 
       - name: Delete older versions
