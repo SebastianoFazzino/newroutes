@@ -15,6 +15,8 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
+
 
 @Data
 @Configuration
@@ -77,7 +79,7 @@ public class SecurityConfig {
                         .type(SecurityScheme.Type.HTTP)
                         .scheme("bearer").bearerFormat("JWT")
                         .in(SecurityScheme.In.HEADER)
-                        .name(jwtHeader)))
+                        .name(AUTHORIZATION)))
                 .info(new Info().title("NewRoutes API")
                 .description("NewRoutes API").version("v1"))
                 .addServersItem(new Server()
@@ -87,7 +89,7 @@ public class SecurityConfig {
                         .url("https://newroutes-develop.up.railway.app")
                         .description("Develop"))
                 .addServersItem(new Server()
-                        .url("https://newroutes.up.railway.app/")
+                        .url("https://newroutes.up.railway.app")
                         .description("Production"));
     }
 }
