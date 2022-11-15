@@ -1,6 +1,11 @@
 package com.newroutes.config;
 
 import com.auth0.jwt.algorithms.Algorithm;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityScheme;
+import io.swagger.v3.oas.models.servers.Server;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -63,5 +68,26 @@ public class SecurityConfig {
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
+    }
+
+    @Bean
+    public OpenAPI openAPIConfig() {
+        return new OpenAPI().components(new Components()
+                .addSecuritySchemes("bearer token", new SecurityScheme()
+                        .type(SecurityScheme.Type.HTTP)
+                        .scheme("bearer").bearerFormat("JWT")
+                        .in(SecurityScheme.In.HEADER)
+                        .name(jwtHeader)))
+                .info(new Info().title("NewRoutes API")
+                .description("NewRoutes API").version("v1"))
+                .addServersItem(new Server()
+                        .url("http://localhost:9325")
+                        .description("Local"))
+                .addServersItem(new Server()
+                        .url("https://newroutes-develop.up.railway.app")
+                        .description("Develop"))
+                .addServersItem(new Server()
+                        .url("https://newroutes.up.railway.app/")
+                        .description("Production"));
     }
 }
