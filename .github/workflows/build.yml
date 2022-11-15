@@ -39,7 +39,7 @@ jobs:
                     ]'
 
       - name: Run Pipeline
-        run: mvn deploy -DskipTests
+        run: mvn deploy -X -DskipTests
 
       - name: Delete old workflow runs
         uses: Mattraks/delete-workflow-runs@v2
