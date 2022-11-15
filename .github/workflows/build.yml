@@ -44,7 +44,7 @@ jobs:
       - name: Delete old workflow runs
         uses: Mattraks/delete-workflow-runs@v2
         with:
-          token: ${{ github.token }}
+          token: ${{ secrets.ACCESS_TOKEN }}
           repository: SebastianoFazzino/newroutes
           retain_days: 10
           keep_minimum_runs: 5
