@@ -4,6 +4,7 @@ import com.auth0.jwt.algorithms.Algorithm;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import io.swagger.v3.oas.models.servers.Server;
 import lombok.Data;
@@ -14,8 +15,6 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-
-import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 
 @Data
@@ -73,15 +72,20 @@ public class SecurityConfig {
     }
 
     @Bean
-    public OpenAPI openAPIConfig() {
-        return new OpenAPI().components(new Components()
-                .addSecuritySchemes("bearer token", new SecurityScheme()
-                        .type(SecurityScheme.Type.HTTP)
-                        .scheme("bearer").bearerFormat("JWT")
-                        .in(SecurityScheme.In.HEADER)
-                        .name(AUTHORIZATION)))
+    @Profile("!local")
+    public OpenAPI customizeOpenAPI() {
+        final String securitySchemeName = "bearerAuth";
+        return new OpenAPI()
+                .addSecurityItem(new SecurityRequirement()
+                        .addList(securitySchemeName))
+                .components(new Components()
+                        .addSecuritySchemes(securitySchemeName, new SecurityScheme()
+                                .name(securitySchemeName)
+                                .type(SecurityScheme.Type.HTTP)
+                                .scheme("bearer")
+                                .bearerFormat("JWT")))
                 .info(new Info().title("NewRoutes API")
-                .description("NewRoutes API").version("v1"))
+                        .description("NewRoutes API").version("v1"))
                 .addServersItem(new Server()
                         .url("http://localhost:9325")
                         .description("Local"))
