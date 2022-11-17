@@ -15,6 +15,9 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.web.cors.CorsConfiguration;
+import org.springframework.web.cors.CorsConfigurationSource;
+import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
 @Data
@@ -72,6 +75,19 @@ public class SecurityConfig {
     }
 
     @Bean
+    CorsConfigurationSource corsConfigurationSource() {
+        CorsConfiguration configuration = new CorsConfiguration();
+        configuration.addAllowedOrigin("*");
+        configuration.addAllowedMethod("*");
+        configuration.addAllowedHeader("*");
+        configuration.addExposedHeader(this.getJwtHeader());
+
+        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        source.registerCorsConfiguration("/**", configuration);
+        return source;
+    }
+
+    @Bean
     @Profile("!local")
     public OpenAPI customizeOpenAPI() {
         final String securitySchemeName = "bearerAuth";
@@ -89,6 +105,9 @@ public class SecurityConfig {
                 .addServersItem(new Server()
                         .url("http://localhost:9325")
                         .description("Local"))
+                .addServersItem(new Server()
+                        .url("http://localhost:9324")
+                        .description("Local-Auth-Required"))
                 .addServersItem(new Server()
                         .url("https://newroutes-develop.up.railway.app")
                         .description("Develop"))

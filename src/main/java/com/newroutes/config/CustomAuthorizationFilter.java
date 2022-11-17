@@ -99,8 +99,7 @@ public class CustomAuthorizationFilter extends OncePerRequestFilter {
 
     private boolean authenticateAsAnonymous() {
 
-        log.debug("Received Request without any token, will be do auto auth");
-
+        log.debug("Authorizing anonymous request");
         UsernamePasswordAuthenticationToken authentication =
                 new UsernamePasswordAuthenticationToken(
                         null,

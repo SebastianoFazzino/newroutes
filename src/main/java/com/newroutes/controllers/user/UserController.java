@@ -7,6 +7,7 @@ import com.newroutes.services.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
@@ -23,11 +24,13 @@ public class UserController {
 
     private final UserService service;
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/id/{id}")
     public ResponseEntity<User> getById(@PathVariable("id") UUID id) {
         return ResponseEntity.ok(service.getById(id));
     }
 
+    @PreAuthorize("hasAuthority('ADMIN')")
     @GetMapping("/all")
     public ResponseEntity<List<User>> getById() {
         return ResponseEntity.ok(service.getAll());
