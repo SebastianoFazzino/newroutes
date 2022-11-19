@@ -1,4 +1,4 @@
-package com.newroutes.entities;
+package com.newroutes.entities.sendinblue;
 
 import com.newroutes.enums.Gender;
 import com.newroutes.enums.NotificationReceptionLevel;

@@ -1,6 +1,6 @@
 package com.newroutes.repositories;
 
-import com.newroutes.entities.SendinBlueUserEntity;
+import com.newroutes.entities.sendinblue.SendinBlueUserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

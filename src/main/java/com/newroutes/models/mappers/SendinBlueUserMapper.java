@@ -1,6 +1,6 @@
 package com.newroutes.models.mappers;
 
-import com.newroutes.entities.SendinBlueUserEntity;
+import com.newroutes.entities.sendinblue.SendinBlueUserEntity;
 import com.newroutes.models.sendinblue.SendinBlueUser;
 import com.newroutes.models.user.User;
 import org.mapstruct.Mapper;

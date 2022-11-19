@@ -12,7 +12,8 @@ import com.newroutes.models.user.User;
 import com.newroutes.models.user.UserSignupData;
 import com.newroutes.repositories.user.UserRepository;
 import com.newroutes.services.integrations.CloudmersiveService;
-import com.newroutes.services.integrations.SendinblueService;
+import com.newroutes.services.integrations.sendinblue.EmailService;
+import com.newroutes.services.integrations.sendinblue.SendinblueService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.validator.routines.EmailValidator;
@@ -38,7 +39,7 @@ public class UserService implements UserDetailsService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final CloudmersiveService cloudmersiveService;
     private final SendinblueService sendinblueService;
-
+    private final EmailService emailService;
 
     //*********************************************
     // CRUD region
@@ -91,9 +92,12 @@ public class UserService implements UserDetailsService {
         //**************************************************
         // Send contact to SendinBlue
 
+        long DELAY = 30;
+
         if ( !newSignup ) {
 
             sendinblueService.updateContact(savedUser);
+            emailService.sendWelcomeEmail(savedUser.getId(), DELAY);
             return savedUser;
 
         } else {

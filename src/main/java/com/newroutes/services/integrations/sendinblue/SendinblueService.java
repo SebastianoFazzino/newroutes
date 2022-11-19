@@ -1,6 +1,7 @@
-package com.newroutes.services.integrations;
+package com.newroutes.services.integrations.sendinblue;
 
-import com.newroutes.entities.SendinBlueUserEntity;
+import com.newroutes.entities.sendinblue.SendinBlueUserEntity;
+import com.newroutes.exceptions.user.UserNotFoundException;
 import com.newroutes.models.mappers.SendinBlueUserMapper;
 import com.newroutes.models.sendinblue.SendinBlueUser;
 import com.newroutes.models.user.User;
@@ -12,13 +13,13 @@ import org.springframework.stereotype.Service;
 import sendinblue.ApiClient;
 import sendinblue.ApiException;
 import sendinblue.Configuration;
+import sendinblue.auth.ApiKeyAuth;
 import sibApi.AccountApi;
 import sibApi.ContactsApi;
-import sibModel.CreateContact;
-import sibModel.CreateUpdateContactModel;
-import sibModel.GetAccount;
-import sibModel.UpdateContact;
+import sibApi.TransactionalEmailsApi;
+import sibModel.*;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -31,10 +32,20 @@ public class SendinblueService {
     private final SendinBlueUserMapper mapper;
 
     //*************************************************************************
-    // CRUD region
+    // User CRUD
 
     private SendinBlueUser save(SendinBlueUser user) {
         return mapper.convertToDto(repository.save(mapper.convertToEntity(user)));
+    }
+
+    public SendinBlueUser getById(UUID userId) {
+
+        log.info("Getting User by id {}", userId);
+
+        SendinBlueUserEntity user = repository.findByUserId(userId)
+                .orElseThrow(() -> new UserNotFoundException(String.format("User not found by id '%s'", userId)));
+
+        return mapper.convertToDto(user);
     }
 
     private SendinBlueUser getOrCreate(UUID userId) {
@@ -88,7 +99,6 @@ public class SendinblueService {
         CreateUpdateContactModel contact = this.createContact(createContact);
 
         sendinBlueUser.setSendinBlueId(contact.getId().toString());
-        this.save(sendinBlueUser);
 
         return contact;
     }
@@ -166,5 +176,31 @@ public class SendinblueService {
         ApiClient defaultClient = Configuration.getDefaultApiClient();
         defaultClient.setApiKey(key);
         return defaultClient;
+    }
+
+    public void sendTransactionalEmail(String email, Long templateId) {
+
+        log.info("[SIB] - Sending transactional email with template {} to {}", templateId, email);
+
+        ApiClient defaultClient = Configuration.getDefaultApiClient();
+        ApiKeyAuth apiKey = (ApiKeyAuth) defaultClient.getAuthentication("api-key");
+        apiKey.setApiKey(key);
+
+        try {
+            TransactionalEmailsApi api = new TransactionalEmailsApi();
+
+            SendSmtpEmailTo to = new SendSmtpEmailTo();
+            to.setEmail(email);
+
+            SendSmtpEmail sendSmtpEmail = new SendSmtpEmail();
+            sendSmtpEmail.to(List.of(to));
+            sendSmtpEmail.setTemplateId(templateId);
+
+            CreateSmtpEmail response = api.sendTransacEmail(sendSmtpEmail);
+            log.info("[SIB] - Response: '{}'", response);
+
+        } catch (Exception ex) {
+            log.error(ex.toString());
+        }
     }
 }
