@@ -1,15 +1,18 @@
 package com.newroutes.services.user;
 
+import com.google.gson.Gson;
+import com.newroutes.entities.user.ArchivedUser;
 import com.newroutes.entities.user.UserEntity;
 import com.newroutes.enums.user.LogOperationType;
 import com.newroutes.enums.user.LoginSource;
 import com.newroutes.exceptions.user.EmailNotValidException;
 import com.newroutes.exceptions.user.UserAlreadyExistsException;
 import com.newroutes.exceptions.user.UserNotFoundException;
-import com.newroutes.models.countries.CountryCode;
+import com.newroutes.models.mappers.user.ArchivedUserMapper;
 import com.newroutes.models.mappers.user.UserMapper;
 import com.newroutes.models.user.User;
 import com.newroutes.models.user.UserSignupData;
+import com.newroutes.repositories.user.ArchivedUserRepository;
 import com.newroutes.repositories.user.UserRepository;
 import com.newroutes.services.integrations.CloudmersiveService;
 import com.newroutes.services.integrations.sendinblue.EmailService;
@@ -34,12 +37,15 @@ public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
     private final UserMapper userMapper;
+    private final ArchivedUserRepository archivedUserRepository;
+    private final ArchivedUserMapper archivedUserMapper;
     private final UserRoleService userRoleService;
     private final LogService logService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final CloudmersiveService cloudmersiveService;
     private final SendinblueService sendinblueService;
     private final EmailService emailService;
+    private final Gson gson = new Gson();
 
     //*********************************************
     // CRUD region
@@ -50,6 +56,10 @@ public class UserService implements UserDetailsService {
 
     public boolean existsByEmail(String email) {
         return userRepository.findByEmail(email).isPresent();
+    }
+
+    private boolean existsArchived(String email) {
+        return archivedUserRepository.findByEmail(email).isPresent();
     }
 
     public User getById(UUID userId) {
@@ -120,19 +130,30 @@ public class UserService implements UserDetailsService {
                 userMapper.convertToEntity(savedUser)));
     }
 
+    /**
+     * Subscribe new User
+     * @param signupData
+     * @return
+     */
     public User signup(UserSignupData signupData) {
 
         log.info("Validating UserSignupData {}", signupData);
 
-        if ( this.existsByEmail(signupData.getEmail()) || existsByUsername(signupData.getUsername()) ) {
+        String email = signupData.getEmail();
+
+        if ( this.existsByEmail(email) || existsByUsername(signupData.getUsername()) ) {
             throw new UserAlreadyExistsException("Either email or username are already in use");
+        }
+
+        if ( this.existsArchived(email) ) {
+            throw new UserAlreadyExistsException("Archived user already exists with email " + email);
         }
 
         //**************************************************
         // Validating email
 
-        boolean isValid = EmailValidator.getInstance().isValid(signupData.getEmail());
-        boolean isDisposable = cloudmersiveService.validateEmail(signupData.getEmail()).isDisposable();
+        boolean isValid = EmailValidator.getInstance().isValid(email);
+        boolean isDisposable = cloudmersiveService.validateEmail(email).isDisposable();
 
         if ( !isValid || isDisposable ) {
             throw new EmailNotValidException("Either email syntax is not valid or is disposable email");
@@ -151,7 +172,6 @@ public class UserService implements UserDetailsService {
         //**************************************************
 
         userRoleService.addRole(savedUser);
-        savedUser = this.save(savedUser);
 
         //**************************************************
         // Creating signup log
@@ -167,6 +187,11 @@ public class UserService implements UserDetailsService {
         return savedUser;
     }
 
+    /**
+     * Update last login
+     * @param username
+     * @param loginSource
+     */
     public void updateLastLogin(String username, LoginSource loginSource) {
 
         User user = this.getByUsername(username);
@@ -180,13 +205,29 @@ public class UserService implements UserDetailsService {
         );
     }
 
-    public User setCountry(UUID userId, CountryCode countryCode) {
+    //***********************************************************
+    // Delete User
 
-        log.info("Setting User '{}' Country as {}", userId, countryCode);
+    /**
+     * Delete User
+     * @param userId
+     */
+    public void deleteUser(UUID userId) {
 
+        log.info("Deleting User {}", userId);
         User user = this.getById(userId);
-        user.setCountry(countryCode);
-        return this.save(user);
+
+        //****************************************
+        // unsubscribe User
+        sendinblueService.deleteContact(user.getEmail());
+
+        ArchivedUser archivedUser = new ArchivedUser();
+        archivedUserMapper.createFromUser(user, archivedUser);
+        archivedUser.addDeletedLog();
+
+        log.info("Saving archived User {}", archivedUser);
+        archivedUserRepository.save(archivedUser);
+        userRepository.delete(userMapper.convertToEntity(user));
     }
 
     //***********************************************************

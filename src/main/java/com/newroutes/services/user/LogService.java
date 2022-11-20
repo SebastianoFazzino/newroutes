@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -22,5 +24,11 @@ public class LogService {
     public void addLog(UUID userId, LogOperationType type, String message) {
         Log log = new Log(userId,type,message);
         repository.save(mapper.convertToEntity(log));
+    }
+
+    public List<Log> getByUserId(UUID userId) {
+        return repository.findByUserId(userId)
+                .stream().map(mapper::convertToDto)
+                .collect(Collectors.toList());
     }
 }

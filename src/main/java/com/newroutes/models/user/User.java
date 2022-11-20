@@ -7,6 +7,7 @@ import com.newroutes.models.BaseModel;
 import com.newroutes.models.countries.CountryCode;
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -42,7 +43,7 @@ public class User extends BaseModel {
 
     private UserStatus status = UserStatus.ACTIVE;
 
-    private UserClass userClass;
+    private UserClass userClass = UserClass.STANDARD;
 
     private String authToken;
 
@@ -52,6 +53,8 @@ public class User extends BaseModel {
 
     private NotificationReceptionLevel notificationReceptionLevel = NotificationReceptionLevel.ALL;
 
-    private List<UserRole> roles;
+    private List<UserRole> roles = new ArrayList<>();
+
+    private List<Log> logs = new ArrayList<>();
 
 }

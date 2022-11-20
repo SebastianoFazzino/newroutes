@@ -1,33 +1,33 @@
 package com.newroutes.entities.user;
 
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.newroutes.entities.BaseEntity;
+import com.google.gson.Gson;
 import com.newroutes.enums.user.*;
 import com.newroutes.models.countries.CountryCode;
+import com.newroutes.models.user.Log;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
+import org.hibernate.annotations.Type;
 
 import javax.persistence.*;
 import java.util.Date;
-import java.util.List;
-
+import java.util.UUID;
 
 @Data
 @Entity
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode(callSuper = true)
-@Table(name = "users",
-        uniqueConstraints = {
-        @UniqueConstraint(name = "uniqueUsername", columnNames = {"username"}),
-        @UniqueConstraint(name = "uniqueEmail", columnNames = {"email"}),
-        @UniqueConstraint(name = "uniqueAuthToken", columnNames = {"authToken"}),
-        @UniqueConstraint(name = "uniqueSendinBlueId", columnNames = {"sendinBlueId"})
-})
-public class UserEntity extends BaseEntity {
+@Table(name = "archived_user")
+public class ArchivedUser {
+
+    @Id
+    @Type(type="uuid-char")
+    private UUID id;
+
+    private Date createdAt;
+
+    private Date lastModifiedAt;
 
     @Column(nullable = false)
     private String username;
@@ -35,6 +35,7 @@ public class UserEntity extends BaseEntity {
     @Column(nullable = false)
     private String email;
 
+    @ToString.Exclude
     @Column(nullable = false)
     private String password;
 
@@ -74,19 +75,24 @@ public class UserEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private NotificationReceptionLevel notificationReceptionLevel;
 
-    @OneToMany(
-            fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL,
-            mappedBy = "user"
-    )
-    private List<UserRoleEntity> roles;
+    @Column(columnDefinition = "TEXT")
+    private String roles;
 
-    @JsonIgnore
-    @OneToMany(
-            fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
-            mappedBy = "user"
-    )
-    private List<LogEntity> logs;
+    @ToString.Exclude
+    @Column(columnDefinition = "TEXT")
+    private String logs;
 
+    public void addDeletedLog() {
+
+        Log deleteUserLog = new Log();
+        deleteUserLog.setId(UUID.randomUUID());
+        deleteUserLog.setUserId(this.getId());
+        deleteUserLog.setLogMessage("Requested delete and unsubscribe user");
+        deleteUserLog.setType(LogOperationType.DELETE_USER);
+        deleteUserLog.setCreatedAt(new Date());
+        deleteUserLog.setLastModifiedAt(new Date());
+
+        Gson gson = new Gson();
+        this.logs += gson.toJson(deleteUserLog);
+    }
 }

@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
 import sendinblue.ApiClient;
 import sendinblue.ApiException;
 import sendinblue.Configuration;
-import sendinblue.auth.ApiKeyAuth;
 import sibApi.AccountApi;
 import sibApi.ContactsApi;
 import sibApi.TransactionalEmailsApi;
@@ -100,6 +99,7 @@ public class SendinblueService {
         CreateUpdateContactModel contact = this.createContact(createContact);
 
         sendinBlueUser.setSendinBlueId(contact.getId().toString());
+        this.save(sendinBlueUser);
 
         return contact;
     }
@@ -156,6 +156,21 @@ public class SendinblueService {
         }
     }
 
+    /**
+     * Delete contact
+     * @param identifier
+     */
+    public void deleteContact(String identifier) {
+
+        log.info("[SIB] - Deleting Contact {}", identifier);
+
+        try {
+            this.buildContactsApi().deleteContact(identifier);
+        } catch (ApiException e) {
+            log.error("Exception when calling ContactsApi#deleteContact => {}", e.getMessage());
+        }
+    }
+
     //*************************************************************************
 
     @Value("${integrations.sendinblue.apikey}")
@@ -179,6 +194,11 @@ public class SendinblueService {
         return defaultClient;
     }
 
+    /**
+     * Send transactional email
+     * @param email
+     * @param template
+     */
     public void sendTransactionalEmail(String email, Template template) {
 
         log.info("[SIB] - Sending transactional email with template {} to {}", template, email);
@@ -203,6 +223,10 @@ public class SendinblueService {
         }
     }
 
+    /**
+     * Get all Templates
+     * @return
+     */
     public GetSmtpTemplates getTemplates() {
 
         log.info("[SIB] - Requested get all Templates");
@@ -222,6 +246,11 @@ public class SendinblueService {
         }
     }
 
+    /**
+     * Get Template by id
+     * @param template
+     * @return
+     */
     public GetSmtpTemplateOverview getTemplate(Template template) {
 
         log.info("[SIB] - Requested get Template {}", template);
