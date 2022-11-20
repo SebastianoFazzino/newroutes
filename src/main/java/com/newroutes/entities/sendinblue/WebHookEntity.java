@@ -19,7 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 @Table(name = "sendinblue_webhook",
         uniqueConstraints = {
-                @UniqueConstraint(name = "uniqueWebHook", columnNames = {"webHookId","event"})
+                @UniqueConstraint(name = "uniqueWebHook", columnNames = {"email","event","templateId"})
 })
 public class WebHookEntity extends BaseEntity {
 
