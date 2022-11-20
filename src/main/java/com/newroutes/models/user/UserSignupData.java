@@ -1,6 +1,6 @@
 package com.newroutes.models.user;
 
-import com.newroutes.enums.UserClass;
+import com.newroutes.enums.user.UserClass;
 import com.sun.istack.NotNull;
 import lombok.*;
 

@@ -3,7 +3,7 @@ package com.newroutes.entities.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.newroutes.entities.BaseEntity;
-import com.newroutes.enums.*;
+import com.newroutes.enums.user.*;
 import com.newroutes.models.countries.CountryCode;
 import lombok.AllArgsConstructor;
 import lombok.Data;

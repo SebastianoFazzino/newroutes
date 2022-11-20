@@ -19,7 +19,7 @@ public class CloudmersiveController {
 
     private final CloudmersiveService service;
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority(@securityConfig.ADMIN)")
     @GetMapping("/validate")
     public ResponseEntity<CloudmersiveEmailValidationResponse> validateEmail(
             @RequestParam String email

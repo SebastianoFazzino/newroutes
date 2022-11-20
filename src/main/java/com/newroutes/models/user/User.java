@@ -2,7 +2,7 @@ package com.newroutes.models.user;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.newroutes.enums.*;
+import com.newroutes.enums.user.*;
 import com.newroutes.models.BaseModel;
 import com.newroutes.models.countries.CountryCode;
 import lombok.*;

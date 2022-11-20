@@ -1,6 +1,6 @@
 package com.newroutes.models.user;
 
-import com.newroutes.enums.Role;
+import com.newroutes.enums.user.Role;
 import com.newroutes.models.BaseModel;
 import lombok.AllArgsConstructor;
 import lombok.Data;

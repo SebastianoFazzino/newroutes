@@ -1,7 +1,7 @@
 package com.newroutes.entities.sendinblue;
 
-import com.newroutes.enums.Gender;
-import com.newroutes.enums.NotificationReceptionLevel;
+import com.newroutes.enums.user.Gender;
+import com.newroutes.enums.user.NotificationReceptionLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

@@ -8,6 +8,7 @@ import com.newroutes.services.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -29,6 +30,7 @@ public class AuthenticationController {
     private final AuthenticationManager authenticationManager;
 
 
+    @PreAuthorize("hasAuthority({@securityConfig.ADMIN, @securityConfig.USER})")
     @GetMapping("/token-refresh")
     public void refreshToken(HttpServletRequest request, HttpServletResponse response)
             throws IOException {

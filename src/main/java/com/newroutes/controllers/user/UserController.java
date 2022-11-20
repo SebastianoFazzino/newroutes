@@ -24,24 +24,16 @@ public class UserController {
 
     private final UserService service;
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority(@securityConfig.ADMIN)")
     @GetMapping("/id/{id}")
     public ResponseEntity<User> getById(@PathVariable("id") UUID id) {
         return ResponseEntity.ok(service.getById(id));
     }
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority(@securityConfig.ADMIN)")
     @GetMapping("/all")
     public ResponseEntity<List<User>> getById() {
         return ResponseEntity.ok(service.getAll());
-    }
-
-    @PostMapping("/country/set/{userId}")
-    public ResponseEntity<User> setCountry(
-            @PathVariable("userId") UUID userId,
-            @RequestParam CountryCode countryCode
-    ) {
-        return ResponseEntity.ok(service.setCountry(userId, countryCode));
     }
 
     //*****************

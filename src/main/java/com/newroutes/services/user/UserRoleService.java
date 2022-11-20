@@ -1,7 +1,7 @@
 package com.newroutes.services.user;
 
-import com.newroutes.enums.Role;
-import com.newroutes.enums.UserClass;
+import com.newroutes.enums.user.Role;
+import com.newroutes.enums.user.UserClass;
 import com.newroutes.models.mappers.user.UserRoleMapper;
 import com.newroutes.models.user.User;
 import com.newroutes.models.user.UserRole;

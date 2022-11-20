@@ -21,7 +21,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 
 @Data
-@Configuration
+@Configuration("securityConfig")
 public class SecurityConfig {
 
     @Value("${security.jwt.header}")
@@ -47,6 +47,9 @@ public class SecurityConfig {
 
     @Value("${security.jwt.error.header}")
     private String errorHeader;
+
+    private final String ADMIN = "ADMIN";
+    private final String USER = "USER";
 
     public Algorithm getAlgorithm() {
         return Algorithm.HMAC256(this.getJwtSecret().getBytes());

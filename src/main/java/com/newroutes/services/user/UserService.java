@@ -1,8 +1,8 @@
 package com.newroutes.services.user;
 
 import com.newroutes.entities.user.UserEntity;
-import com.newroutes.enums.LogOperationType;
-import com.newroutes.enums.LoginSource;
+import com.newroutes.enums.user.LogOperationType;
+import com.newroutes.enums.user.LoginSource;
 import com.newroutes.exceptions.user.EmailNotValidException;
 import com.newroutes.exceptions.user.UserAlreadyExistsException;
 import com.newroutes.exceptions.user.UserNotFoundException;
@@ -92,18 +92,18 @@ public class UserService implements UserDetailsService {
         //**************************************************
         // Send contact to SendinBlue
 
-        long DELAY = 30;
-
         if ( !newSignup ) {
 
             sendinblueService.updateContact(savedUser);
-            emailService.sendWelcomeEmail(savedUser.getId(), DELAY);
             return savedUser;
 
         } else {
 
             CreateUpdateContactModel contactModel = sendinblueService.createContact(savedUser);
             savedUser.setSendinBlueId(contactModel.getId() + "");
+
+            long delay = 15;
+            emailService.sendWelcomeEmail(savedUser.getId(), delay);
 
             //*********************************************
 

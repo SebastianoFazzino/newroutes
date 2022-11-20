@@ -20,7 +20,7 @@ public class TrueWayController {
 
     private final TrueWayService trueWayService;
 
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PreAuthorize("hasAuthority(@securityConfig.ADMIN)")
     @GetMapping("/geocode")
     public ResponseEntity<GeocodingResponse> getAccount(
             @RequestParam boolean reverse,

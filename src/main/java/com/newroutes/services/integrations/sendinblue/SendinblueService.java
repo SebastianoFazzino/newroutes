@@ -1,6 +1,7 @@
 package com.newroutes.services.integrations.sendinblue;
 
 import com.newroutes.entities.sendinblue.SendinBlueUserEntity;
+import com.newroutes.enums.sendinblue.Template;
 import com.newroutes.exceptions.user.UserNotFoundException;
 import com.newroutes.models.mappers.SendinBlueUserMapper;
 import com.newroutes.models.sendinblue.SendinBlueUser;
@@ -178,29 +179,62 @@ public class SendinblueService {
         return defaultClient;
     }
 
-    public void sendTransactionalEmail(String email, Long templateId) {
+    public void sendTransactionalEmail(String email, Template template) {
 
-        log.info("[SIB] - Sending transactional email with template {} to {}", templateId, email);
+        log.info("[SIB] - Sending transactional email with template {} to {}", template, email);
 
-        ApiClient defaultClient = Configuration.getDefaultApiClient();
-        ApiKeyAuth apiKey = (ApiKeyAuth) defaultClient.getAuthentication("api-key");
-        apiKey.setApiKey(key);
+        this.getApiClient();
+        TransactionalEmailsApi api = new TransactionalEmailsApi();
 
         try {
-            TransactionalEmailsApi api = new TransactionalEmailsApi();
 
             SendSmtpEmailTo to = new SendSmtpEmailTo();
             to.setEmail(email);
 
             SendSmtpEmail sendSmtpEmail = new SendSmtpEmail();
             sendSmtpEmail.to(List.of(to));
-            sendSmtpEmail.setTemplateId(templateId);
+            sendSmtpEmail.setTemplateId(template.getId());
 
             CreateSmtpEmail response = api.sendTransacEmail(sendSmtpEmail);
             log.info("[SIB] - Response: '{}'", response);
 
         } catch (Exception ex) {
             log.error(ex.toString());
+        }
+    }
+
+    public GetSmtpTemplates getTemplates() {
+
+        log.info("[SIB] - Requested get all Templates");
+
+        this.getApiClient();
+        TransactionalEmailsApi api = new TransactionalEmailsApi();
+        Boolean templateStatus = true;
+        Long limit = 50L;
+        Long offset = 0L;
+
+        try {
+            return api.getSmtpTemplates(templateStatus, limit, offset, null);
+
+        } catch (Exception ex) {
+            log.error("Error thrown on get templates: {}", ex.toString());
+            return null;
+        }
+    }
+
+    public GetSmtpTemplateOverview getTemplate(Template template) {
+
+        log.info("[SIB] - Requested get Template {}", template);
+
+        this.getApiClient();
+        TransactionalEmailsApi api = new TransactionalEmailsApi();
+
+        try {
+            return api.getSmtpTemplate(template.getId());
+
+        } catch (Exception ex) {
+            log.error("Error thrown on get template {}: {}", template, ex.toString());
+            return null;
         }
     }
 }

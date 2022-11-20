@@ -1,6 +1,6 @@
 package com.newroutes.models.requests;
 
-import com.newroutes.enums.LoginSource;
+import com.newroutes.enums.user.LoginSource;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;

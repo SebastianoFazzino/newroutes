@@ -1,4 +1,4 @@
-package com.newroutes.enums;
+package com.newroutes.enums.user;
 
 public enum UserClass {
 

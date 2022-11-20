@@ -1,6 +1,6 @@
 package com.newroutes.services.user;
 
-import com.newroutes.enums.LogOperationType;
+import com.newroutes.enums.user.LogOperationType;
 import com.newroutes.models.mappers.user.LogMapper;
 import com.newroutes.models.user.Log;
 import com.newroutes.repositories.user.LogRepository;

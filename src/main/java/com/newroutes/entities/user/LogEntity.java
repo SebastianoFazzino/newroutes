@@ -1,7 +1,7 @@
 package com.newroutes.entities.user;
 
 import com.newroutes.entities.BaseEntity;
-import com.newroutes.enums.LogOperationType;
+import com.newroutes.enums.user.LogOperationType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
