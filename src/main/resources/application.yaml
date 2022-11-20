@@ -3,6 +3,10 @@ server:
 
 spring:
 
+  jackson:
+    mapper:
+      ACCEPT_CASE_INSENSITIVE_ENUMS: true
+
   profiles:
     active: "prod"
 

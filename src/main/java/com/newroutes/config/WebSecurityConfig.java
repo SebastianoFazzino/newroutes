@@ -34,6 +34,7 @@ public class WebSecurityConfig {
         http.authorizeRequests().antMatchers("/healthz").permitAll();
         http.authorizeRequests().antMatchers("/v1/user/public/**").permitAll();
         http.authorizeRequests().antMatchers("/v1/authentication/login").permitAll();
+        http.authorizeRequests().antMatchers("/v1/sendinblue/hook").permitAll();
         http.authorizeRequests().antMatchers("/swagger/**", "/swagger-ui/**", "/api-docs/**", "/v3/api-docs/**").permitAll();
         http.authorizeRequests().anyRequest().authenticated();
         http.addFilterBefore(customAuthorizationFilter, UsernamePasswordAuthenticationFilter.class);
