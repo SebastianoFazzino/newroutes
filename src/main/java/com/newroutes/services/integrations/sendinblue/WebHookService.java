@@ -34,8 +34,8 @@ public class WebHookService {
 
         log.info("[SIB] - Received Web Hook hook {}", webHook);
 
-        Optional<WebHookEntity> optionalWebHook = repository.findByWebHookIdAndEvent(
-                webHook.getWebHookId(), webHook.getEvent());
+        Optional<WebHookEntity> optionalWebHook = repository.findByEmailAndTemplateIdAndEvent(
+                webHook.getEmail(), webHook.getTemplateId(), webHook.getEvent());
 
         if (optionalWebHook.isEmpty() ) {
 

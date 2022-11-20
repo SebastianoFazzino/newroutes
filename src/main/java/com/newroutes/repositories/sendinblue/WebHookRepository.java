@@ -13,7 +13,7 @@ import java.util.UUID;
 @Repository
 public interface WebHookRepository extends JpaRepository<WebHookEntity, UUID> {
 
-    Optional<WebHookEntity> findByWebHookIdAndEvent(Long id, WebHookEvent event);
+    Optional<WebHookEntity> findByEmailAndTemplateIdAndEvent(String email, Long id, WebHookEvent event);
 
     List<WebHookEntity> getAllByWebHookId(Long id);
 
