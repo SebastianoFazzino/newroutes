@@ -24,7 +24,7 @@ public class WebHookController {
 
     private final WebHookService webHookService;
 
-    @PostMapping("/receive")
+    @PostMapping("/public/receive")
     public ResponseEntity<Object> manageWebHook(@RequestBody WebHook webHook) {
         webHookService.manageWebHook(webHook);
         return ResponseEntity.ok(HttpStatus.OK);
