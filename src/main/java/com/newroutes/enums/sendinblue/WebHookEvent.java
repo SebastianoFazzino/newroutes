@@ -13,6 +13,7 @@ public enum WebHookEvent {
     DELIVERED("delivered"),
     OPENED("opened"),
     FIRST_OPENING("first_opening"),
+    UNIQUE_OPENED("unique_opened"),
     CLICKED("clicked"),
     SOFT_BOUNCE("soft_bounce"),
     HARD_BOUNCE("hard_bounce"),
