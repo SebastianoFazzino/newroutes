@@ -1,4 +1,4 @@
-package com.newroutes.repositories;
+package com.newroutes.repositories.sendinblue;
 
 import com.newroutes.entities.sendinblue.SendinBlueUserEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -11,4 +11,6 @@ import java.util.UUID;
 public interface SendinblueUserRepository extends JpaRepository<SendinBlueUserEntity, UUID> {
 
     Optional<SendinBlueUserEntity> findByUserId(UUID userId);
+
+    Optional<SendinBlueUserEntity> findByEmail(String email);
 }

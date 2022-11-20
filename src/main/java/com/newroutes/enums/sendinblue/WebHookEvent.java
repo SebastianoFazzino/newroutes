@@ -8,6 +8,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum WebHookEvent {
 
+    REQUEST("request"),
     SENT("sent"),
     DELIVERED("delivered"),
     OPENED("opened"),
@@ -23,5 +24,5 @@ public enum WebHookEvent {
     BLOCKED("blocked"),
     ERROR("error");
 
-    private String name;
+    private final String name;
 }

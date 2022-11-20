@@ -3,10 +3,10 @@ package com.newroutes.services.integrations.sendinblue;
 import com.newroutes.entities.sendinblue.SendinBlueUserEntity;
 import com.newroutes.enums.sendinblue.Template;
 import com.newroutes.exceptions.user.UserNotFoundException;
-import com.newroutes.models.mappers.SendinBlueUserMapper;
+import com.newroutes.models.mappers.sendinblue.SendinBlueUserMapper;
 import com.newroutes.models.sendinblue.SendinBlueUser;
 import com.newroutes.models.user.User;
-import com.newroutes.repositories.SendinblueUserRepository;
+import com.newroutes.repositories.sendinblue.SendinblueUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,6 +44,16 @@ public class SendinblueService {
 
         SendinBlueUserEntity user = repository.findByUserId(userId)
                 .orElseThrow(() -> new UserNotFoundException(String.format("User not found by id '%s'", userId)));
+
+        return mapper.convertToDto(user);
+    }
+
+    public SendinBlueUser getByEmail(String email) {
+
+        log.info("Getting User by email {}", email);
+
+        SendinBlueUserEntity user = repository.findByEmail(email)
+                .orElseThrow(() -> new UserNotFoundException(String.format("User not found by email '%s'", email)));
 
         return mapper.convertToDto(user);
     }

@@ -13,11 +13,12 @@ import java.util.List;
 @NoArgsConstructor
 public class WebHook {
 
-    private Long id;
+    @JsonProperty("id")
+    private Long webHookId;
 
     private String email;
 
-    @JsonProperty("template_id-id")
+    @JsonProperty("template_id")
     private Long templateId;
 
     @JsonProperty("message-id")
@@ -41,7 +42,8 @@ public class WebHook {
     @JsonProperty("ts_event")
     private Long tsEvent;
 
-    private Long ts_epoch;
+    @JsonProperty("ts_epoch")
+    private Long tsEpoch;
 
     private String reason;
 

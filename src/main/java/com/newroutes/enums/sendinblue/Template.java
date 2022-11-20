@@ -1,5 +1,8 @@
 package com.newroutes.enums.sendinblue;
 
+import lombok.Getter;
+
+@Getter
 public enum Template {
 
     WELCOME(2, "welcome");
@@ -16,5 +19,22 @@ public enum Template {
     }
 
     public long getId() { return id; }
+
     public String getTag() { return tag; };
+
+    public static Template getById(long id) {
+        switch ((int) id)  {
+            case 2:
+            default:
+                return WELCOME;
+        }
+    }
+
+    public static Template getByTag(String tag) {
+        switch (tag) {
+            case "welcome":
+            default:
+                return WELCOME;
+        }
+    }
 }
