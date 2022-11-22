@@ -21,7 +21,7 @@
         <org.mapstruct.version>1.5.3.Final</org.mapstruct.version>
         <org.projectlombok.version>1.18.20</org.projectlombok.version>
         <org.lombok-mapstruct.version>0.2.0</org.lombok-mapstruct.version>
-        <springdoc-openapi-version>1.6.12</springdoc-openapi-version>
+        <springdoc-openapi-version>1.6.13</springdoc-openapi-version>
     </properties>
     <dependencies>
         <dependency>
@@ -122,11 +122,6 @@
 
         <!--**** external integrations ****-->
 
-        <dependency>
-            <groupId>commons-validator</groupId>
-            <artifactId>commons-validator</artifactId>
-            <version>1.7</version>
-        </dependency>
         <dependency>
             <groupId>com.sendinblue</groupId>
             <artifactId>sib-api-v3-sdk</artifactId>

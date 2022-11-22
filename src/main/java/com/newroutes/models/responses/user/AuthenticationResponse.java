@@ -1,4 +1,4 @@
-package com.newroutes.models.responses;
+package com.newroutes.models.responses.user;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

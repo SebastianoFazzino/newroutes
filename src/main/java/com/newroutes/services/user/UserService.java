@@ -10,16 +10,17 @@ import com.newroutes.exceptions.user.UserAlreadyExistsException;
 import com.newroutes.exceptions.user.UserNotFoundException;
 import com.newroutes.models.mappers.user.ArchivedUserMapper;
 import com.newroutes.models.mappers.user.UserMapper;
+import com.newroutes.models.responses.utility.Deliverability;
+import com.newroutes.models.responses.utility.EmailValidationResponse;
 import com.newroutes.models.user.User;
 import com.newroutes.models.user.UserSignupData;
 import com.newroutes.repositories.user.ArchivedUserRepository;
 import com.newroutes.repositories.user.UserRepository;
-import com.newroutes.services.integrations.CloudmersiveService;
+import com.newroutes.services.integrations.AbstractApiService;
 import com.newroutes.services.integrations.sendinblue.EmailService;
 import com.newroutes.services.integrations.sendinblue.SendinblueService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -42,10 +43,9 @@ public class UserService implements UserDetailsService {
     private final UserRoleService userRoleService;
     private final LogService logService;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final CloudmersiveService cloudmersiveService;
     private final SendinblueService sendinblueService;
+    private final AbstractApiService abstractApiService;
     private final EmailService emailService;
-    private final Gson gson = new Gson();
 
     //*********************************************
     // CRUD region
@@ -152,11 +152,14 @@ public class UserService implements UserDetailsService {
         //**************************************************
         // Validating email
 
-        boolean isValid = EmailValidator.getInstance().isValid(email);
-        boolean isDisposable = cloudmersiveService.validateEmail(email).isDisposable();
+        EmailValidationResponse validation = abstractApiService.validateEmail(email);
 
-        if ( !isValid || isDisposable ) {
+        if ( !validation.validFormat.getValue() || validation.disposableEmail.getValue() ) {
             throw new EmailNotValidException("Either email syntax is not valid or is disposable email");
+        }
+
+        if ( validation.getDeliverability().equals(Deliverability.UNDELIVERABLE) ) {
+            throw new EmailNotValidException("Email validation failed, address is " + validation.getDeliverability());
         }
 
         //**************************************************

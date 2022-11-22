@@ -68,9 +68,10 @@ integrations:
     baseurl: "https://api.sendinblue.com/v3"
     password: ${SENDINBLUE_PASSWORD}
     apikey: ${SENDINBLUE_APIKEY}
-  cloudmersive:
-    baseurl: "https://api.cloudmersive.com"
-    apikey: ${CLOUDMERSIVE_APIKEY}
+  abstract-api:
+    email-validator:
+      baseurl: "https://emailvalidation.abstractapi.com/v1"
+      apikey: ${ABSTRACT_APIKEY}
   true_way:
     baseurl: "https://trueway-geocoding.p.rapidapi.com"
     apikey: ${TRUEWAY_APIKEY}
