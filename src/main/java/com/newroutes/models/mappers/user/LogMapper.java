@@ -10,11 +10,11 @@ import org.mapstruct.Mapping;
 public interface LogMapper extends BaseMapper<LogEntity, Log> {
 
     @Override
-    @Mapping(source = "userId", target = "user")
+    @Mapping(source = "userId", target = "user.id")
     LogEntity convertToEntity(Log dto);
 
     @Override
-    @Mapping(source = "user", target = "userId")
+    @Mapping(source = "user.id", target = "userId")
     Log convertToDto(LogEntity entity);
 
 }

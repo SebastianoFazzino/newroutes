@@ -10,11 +10,11 @@ import org.mapstruct.Mapping;
 public interface UserRoleMapper extends BaseMapper<UserRoleEntity, UserRole> {
 
     @Override
-    @Mapping(source = "userId", target = "user")
+    @Mapping(source = "userId", target = "user.id")
     UserRoleEntity convertToEntity(UserRole dto);
 
     @Override
-    @Mapping(source = "user", target = "userId")
+    @Mapping(source = "user.id", target = "userId")
     UserRole convertToDto(UserRoleEntity entity);
 
 }

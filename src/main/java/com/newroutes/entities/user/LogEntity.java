@@ -7,7 +7,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotNull;
 
 @Data
 @Entity
@@ -16,9 +15,15 @@ import javax.validation.constraints.NotNull;
 @Table(name = "log")
 public class LogEntity extends BaseEntity {
 
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "user_id")
+    @ManyToOne(
+            targetEntity = UserEntity.class,
+            fetch = FetchType.LAZY
+    )
+    @JoinColumn(
+            name = "user_id",
+            referencedColumnName = "id",
+            nullable = false
+    )
     private UserEntity user;
 
     @Column(nullable = false)

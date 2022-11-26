@@ -60,7 +60,7 @@ public class AuthenticationController {
             //**************************************************
 
             log.info("User '{}' logged successfully!", username);
-            userService.updateLastLogin(username, authenticationRequest.getLoginSource());
+            userService.updateLastLogin(username, authenticationRequest.getLoginSource(), request);
 
             //**************************************************
 

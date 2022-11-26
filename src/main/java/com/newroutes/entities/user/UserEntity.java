@@ -5,10 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.newroutes.entities.BaseEntity;
 import com.newroutes.enums.user.*;
 import com.newroutes.models.countries.CountryCode;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -74,18 +71,20 @@ public class UserEntity extends BaseEntity {
     @Enumerated(EnumType.STRING)
     private NotificationReceptionLevel notificationReceptionLevel;
 
+    @ToString.Exclude
     @OneToMany(
-            fetch = FetchType.EAGER,
-            cascade = CascadeType.ALL,
-            mappedBy = "user"
+            mappedBy = "user",
+            fetch = FetchType.LAZY,
+            orphanRemoval = true
     )
     private List<UserRoleEntity> roles;
 
     @JsonIgnore
+    @ToString.Exclude
     @OneToMany(
             fetch = FetchType.LAZY,
-            cascade = CascadeType.ALL,
-            mappedBy = "user"
+            mappedBy = "user",
+            orphanRemoval = true
     )
     private List<LogEntity> logs;
 

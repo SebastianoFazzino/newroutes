@@ -1,6 +1,5 @@
 package com.newroutes.services.user;
 
-import com.google.gson.Gson;
 import com.newroutes.entities.user.ArchivedUser;
 import com.newroutes.entities.user.UserEntity;
 import com.newroutes.enums.user.LogOperationType;
@@ -28,6 +27,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import sibModel.CreateUpdateContactModel;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -195,7 +195,9 @@ public class UserService implements UserDetailsService {
      * @param username
      * @param loginSource
      */
-    public void updateLastLogin(String username, LoginSource loginSource) {
+    public void updateLastLogin(String username, LoginSource loginSource, HttpServletRequest request) {
+
+        String ip = request.getRemoteAddr();
 
         User user = this.getByUsername(username);
         user.setLastLogin(new Date());
@@ -204,7 +206,7 @@ public class UserService implements UserDetailsService {
         logService.addLog(
                 user.getId(),
                 LogOperationType.USER_LOGIN,
-                "New login from application " + loginSource
+                String.format("New login from application %s and ip %s", loginSource, ip)
         );
     }
 
