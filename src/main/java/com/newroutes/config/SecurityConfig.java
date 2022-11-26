@@ -19,6 +19,9 @@ import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.Optional;
+
 
 @Data
 @Configuration("securityConfig")
@@ -50,6 +53,15 @@ public class SecurityConfig {
 
     private final String ADMIN = "ADMIN";
     private final String USER = "USER";
+
+    public static String extractIp(HttpServletRequest request) {
+
+        String ip = Optional.ofNullable(request.getHeader("X-FORWARDED-FOR")).orElse(request.getRemoteAddr());
+        if (ip.equals("0:0:0:0:0:0:0:1")) {
+            return  "127.0.0.1";
+        }
+        return ip;
+    }
 
     public Algorithm getAlgorithm() {
         return Algorithm.HMAC256(this.getJwtSecret().getBytes());

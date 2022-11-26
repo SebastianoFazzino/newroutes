@@ -32,6 +32,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.newroutes.config.SecurityConfig.extractIp;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -198,18 +200,11 @@ public class UserService implements UserDetailsService {
      */
     public void updateLastLogin(String username, LoginSource loginSource, HttpServletRequest request) {
 
-        String ip = Optional.ofNullable(request.getHeader("X-FORWARDED-FOR")).orElse(request.getRemoteAddr());
-        if (ip.equals("0:0:0:0:0:0:0:1")) ip = "127.0.0.1";
-
-        log.info("ip: {}", ip);
-        log.info("Client ip: {}", request.getHeader("Cf-Connecting-Ip"));
-        log.info("X-Forwarded-For: {}", request.getHeader("X-Forwarded-For"));
-        log.info("x-real-ip: {}", request.getHeader("x-real-ip"));
-        log.info("remote address: {}", request.getRemoteAddr());
-
         User user = this.getByUsername(username);
         user.setLastLogin(new Date());
         this.save(user);
+
+        String ip = extractIp(request);
 
         logService.addLog(
                 user.getId(),
