@@ -20,6 +20,7 @@ import com.newroutes.services.integrations.sendinblue.EmailService;
 import com.newroutes.services.integrations.sendinblue.SendinblueService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -197,7 +198,14 @@ public class UserService implements UserDetailsService {
      */
     public void updateLastLogin(String username, LoginSource loginSource, HttpServletRequest request) {
 
-        String ip = request.getRemoteAddr();
+        String ip = Optional.ofNullable(request.getHeader("X-FORWARDED-FOR")).orElse(request.getRemoteAddr());
+        if (ip.equals("0:0:0:0:0:0:0:1")) ip = "127.0.0.1";
+
+        log.info("IP: {}", ip);
+        log.info("X-FORWARDED-FOR: {}", request.getHeader("X-FORWARDED-FOR"));
+        log.info("X-Forwarded-For: {}", request.getHeader("X-Forwarded-For"));
+        log.info("x-real-ip: {}", request.getHeader("x-real-ip"));
+        log.info("remote address: {}", request.getRemoteAddr());
 
         User user = this.getByUsername(username);
         user.setLastLogin(new Date());
