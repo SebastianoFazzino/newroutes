@@ -1,7 +1,5 @@
 server:
   port: 9324
-#  tomcat:
-#    remote-ip-header: X-Forwarded-For
 
 spring:
 
