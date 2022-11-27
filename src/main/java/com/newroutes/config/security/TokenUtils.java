@@ -1,4 +1,4 @@
-package com.newroutes.config;
+package com.newroutes.config.security;
 
 
 import com.auth0.jwt.JWT;

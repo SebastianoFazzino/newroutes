@@ -1,4 +1,4 @@
-package com.newroutes.config;
+package com.newroutes.config.security;
 
 import com.auth0.jwt.algorithms.Algorithm;
 import io.swagger.v3.oas.models.Components;

@@ -1,6 +1,6 @@
 package com.newroutes.controllers.user;
 
-import com.newroutes.config.TokenUtils;
+import com.newroutes.config.security.TokenUtils;
 import com.newroutes.exceptions.user.BadCredentialException;
 import com.newroutes.models.requests.AuthenticationRequest;
 import com.newroutes.models.responses.user.AuthenticationResponse;

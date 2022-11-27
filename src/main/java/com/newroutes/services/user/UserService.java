@@ -1,5 +1,7 @@
 package com.newroutes.services.user;
 
+import com.newroutes.config.rabbitmq.Message;
+import com.newroutes.config.rabbitmq.Producer;
 import com.newroutes.entities.user.ArchivedUser;
 import com.newroutes.entities.user.UserEntity;
 import com.newroutes.enums.user.LogOperationType;
@@ -20,7 +22,6 @@ import com.newroutes.services.integrations.sendinblue.EmailService;
 import com.newroutes.services.integrations.sendinblue.SendinblueService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -32,7 +33,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static com.newroutes.config.SecurityConfig.extractIp;
+import static com.newroutes.config.security.SecurityConfig.extractIp;
 
 @Slf4j
 @Service
@@ -49,6 +50,7 @@ public class UserService implements UserDetailsService {
     private final SendinblueService sendinblueService;
     private final AbstractApiService abstractApiService;
     private final EmailService emailService;
+    private final Producer producer;
 
     //*********************************************
     // CRUD region
@@ -211,6 +213,12 @@ public class UserService implements UserDetailsService {
                 LogOperationType.USER_LOGIN,
                 String.format("New login from application %s and ip %s", loginSource, ip)
         );
+
+        Message<String> message = new Message<>();
+        message.setMessageType("login");
+        message.setPayload("Login");
+
+        producer.sendMessage(message);
     }
 
     //***********************************************************
