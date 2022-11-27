@@ -1,9 +1,13 @@
 package com.newroutes.services.integrations.sendinblue;
 
+import com.newroutes.config.rabbitmq.Producer;
 import com.newroutes.entities.sendinblue.SendinBlueUserEntity;
 import com.newroutes.enums.sendinblue.Template;
 import com.newroutes.exceptions.user.UserNotFoundException;
 import com.newroutes.models.mappers.sendinblue.SendinBlueUserMapper;
+import com.newroutes.models.rabbitmq.EventType;
+import com.newroutes.models.rabbitmq.notification.NotificationEvent;
+import com.newroutes.models.rabbitmq.notification.NotificationEventData;
 import com.newroutes.models.sendinblue.SendinBlueUser;
 import com.newroutes.models.user.User;
 import com.newroutes.repositories.sendinblue.SendinblueUserRepository;
@@ -11,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import sendinblue.ApiClient;
 import sendinblue.ApiException;
 import sendinblue.Configuration;
@@ -30,6 +35,7 @@ public class SendinblueService {
 
     private final SendinblueUserRepository repository;
     private final SendinBlueUserMapper mapper;
+    private final Producer producer;
 
     //*************************************************************************
     // User CRUD
@@ -89,17 +95,27 @@ public class SendinblueService {
     //*************************************************************************
     // Contacts API
 
+    public CreateUpdateContactModel createContact(User user) {
+
+        log.info("Requested create SendinBlueUser Contact for User {}", user.getEmail());
+
+        SendinBlueUser sendinBlueUser = this.getOrCreate(user.getId());
+        mapper.mergeUserData(user, sendinBlueUser);
+        CreateUpdateContactModel createdUser = this.createContact(user, sendinBlueUser);
+
+        this.sendNotificationEvent(EventType.CONTACT_CREATED, user.getId());
+
+        return createdUser;
+    }
+
     /**
      * Create contact from User
      * @param user
      * @return
      */
-    public CreateUpdateContactModel createContact(User user) {
+    public CreateUpdateContactModel createContact(User user, SendinBlueUser sendinBlueUser) {
 
         log.info("Creating SendinBlueUser Contact for User {}", user.getEmail());
-
-        SendinBlueUser sendinBlueUser = this.getOrCreate(user.getId());
-        mapper.mergeUserData(user, sendinBlueUser);
 
         CreateContact createContact = new CreateContact();
         createContact.setEmail(user.getEmail());
@@ -166,11 +182,22 @@ public class SendinblueService {
         }
     }
 
+    @Transactional
+    public void deleteContact(User user) {
+
+        log.warn("Requested delete contact {}", user.getEmail());
+
+        SendinBlueUser sendinBlueUser = this.getById(user.getId());
+        repository.delete(mapper.convertToEntity(sendinBlueUser));
+
+        this.deleteContact(user.getEmail());
+    }
+
     /**
      * Delete contact
      * @param identifier
      */
-    public void deleteContact(String identifier) {
+    private void deleteContact(String identifier) {
 
         log.info("[SIB] - Deleting Contact {}", identifier);
 
@@ -275,5 +302,14 @@ public class SendinblueService {
             log.error("Error thrown on get template {}: {}", template, ex.toString());
             return null;
         }
+    }
+
+    //***********************************************************
+    // rabbitmq
+
+    private void sendNotificationEvent(EventType type, UUID userId) {
+        NotificationEventData data = new NotificationEventData(userId);
+        NotificationEvent notificationEvent = new NotificationEvent(type, data);
+        producer.sendNotificationEvent(notificationEvent);
     }
 }

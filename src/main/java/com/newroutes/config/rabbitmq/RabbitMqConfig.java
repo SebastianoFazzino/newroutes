@@ -10,6 +10,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RabbitMqConfig {
 
+    //user
     public static final String USER_QUEUE = "user-queue";
     public static final String USER_EXCHANGE = "user-exchange";
 
@@ -27,5 +28,25 @@ public class RabbitMqConfig {
     Binding userBinding() {
         return BindingBuilder.bind(this.userQueue()).to(this.userExchange()).withQueueName();
     }
+
+    //notification
+    public static final String NOTIFICATION_QUEUE = "notification-queue";
+    public static final String NOTIFICATION_EXCHANGE = "notification-exchange";
+
+    @Bean
+    public Queue notificationQueue() {
+        return new Queue(NOTIFICATION_QUEUE, false);
+    }
+
+    @Bean
+    public DirectExchange notificationExchange() {
+        return new DirectExchange(NOTIFICATION_EXCHANGE, false, true);
+    }
+
+    @Bean
+    Binding notificationBinding() {
+        return BindingBuilder.bind(this.notificationQueue()).to(this.notificationExchange()).withQueueName();
+    }
+
 
 }

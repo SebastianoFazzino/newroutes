@@ -11,8 +11,8 @@ import com.newroutes.exceptions.user.UserNotFoundException;
 import com.newroutes.models.mappers.user.ArchivedUserMapper;
 import com.newroutes.models.mappers.user.UserMapper;
 import com.newroutes.models.rabbitmq.EventType;
-import com.newroutes.models.rabbitmq.UserEvent;
-import com.newroutes.models.rabbitmq.UserEventData;
+import com.newroutes.models.rabbitmq.user.UserEvent;
+import com.newroutes.models.rabbitmq.user.UserEventData;
 import com.newroutes.models.responses.utility.Deliverability;
 import com.newroutes.models.responses.utility.EmailValidationResponse;
 import com.newroutes.models.user.User;
@@ -20,7 +20,6 @@ import com.newroutes.models.user.UserSignupData;
 import com.newroutes.repositories.user.ArchivedUserRepository;
 import com.newroutes.repositories.user.UserRepository;
 import com.newroutes.services.integrations.AbstractApiService;
-import com.newroutes.services.integrations.sendinblue.EmailService;
 import com.newroutes.services.integrations.sendinblue.SendinblueService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,7 +28,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import sibModel.CreateUpdateContactModel;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
@@ -51,7 +49,6 @@ public class UserService implements UserDetailsService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final SendinblueService sendinblueService;
     private final AbstractApiService abstractApiService;
-    private final EmailService emailService;
     private final Producer producer;
 
     //*********************************************
@@ -106,35 +103,8 @@ public class UserService implements UserDetailsService {
         User savedUser = userMapper.convertToDto(userRepository.save(
                 userMapper.convertToEntity(user)));
 
-        //**************************************************
-        // Send contact to SendinBlue
-
-        if ( !newSignup ) {
-
-            sendinblueService.updateContact(savedUser);
-            return savedUser;
-
-        } else {
-
-            CreateUpdateContactModel contactModel = sendinblueService.createContact(savedUser);
-            savedUser.setSendinBlueId(contactModel.getId() + "");
-
-            long delay = 15;
-            emailService.sendWelcomeEmail(savedUser.getId(), delay);
-
-            //*********************************************
-
-            logService.addLog(
-                    savedUser.getId(),
-                    LogOperationType.SENDINBLUE_USER_CREATED,
-                    String.format("SendinBlueUser contact created with id %s", contactModel.getId())
-            );
-
-            //*********************************************
-        }
-
-        return userMapper.convertToDto(userRepository.save(
-                userMapper.convertToEntity(savedUser)));
+        this.sendUserEvent(newSignup ? EventType.USER_SIGNUP : EventType.UPDATE_USER, savedUser);
+        return savedUser;
     }
 
     /**
@@ -216,9 +186,8 @@ public class UserService implements UserDetailsService {
                 String.format("New login from application %s and ip %s", loginSource, ip)
         );
 
-        UserEventData data = new UserEventData(user.getId(), user.getEmail());
-        UserEvent userEvent = new UserEvent(EventType.USER_LOGIN, data);
-        producer.sendUserEvent(userEvent);
+        // send rabbitmq event
+        this.sendUserEvent(EventType.USER_LOGIN, user);
     }
 
     //***********************************************************
@@ -234,8 +203,8 @@ public class UserService implements UserDetailsService {
         User user = this.getById(userId);
 
         //****************************************
-        // unsubscribe User
-        sendinblueService.deleteContact(user.getEmail());
+
+        this.sendUserEvent(EventType.DELETE_USER, user);
 
         ArchivedUser archivedUser = new ArchivedUser();
         archivedUserMapper.createFromUser(user, archivedUser);
@@ -244,6 +213,15 @@ public class UserService implements UserDetailsService {
         log.info("Saving archived User {}", archivedUser);
         archivedUserRepository.save(archivedUser);
         userRepository.delete(userMapper.convertToEntity(user));
+    }
+
+    //***********************************************************
+    // rabbitmq
+
+    private void sendUserEvent(EventType type, User user) {
+        UserEventData data = new UserEventData(user);
+        UserEvent userEvent = new UserEvent(type, data);
+        producer.sendUserEvent(userEvent);
     }
 
     //***********************************************************

@@ -1,6 +1,7 @@
-package com.newroutes.models.rabbitmq;
+package com.newroutes.models.rabbitmq.user;
 
-import com.newroutes.config.rabbitmq.Event;
+import com.newroutes.models.rabbitmq.Event;
+import com.newroutes.models.rabbitmq.EventType;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 

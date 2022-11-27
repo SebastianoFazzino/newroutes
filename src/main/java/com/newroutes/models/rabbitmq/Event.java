@@ -4,13 +4,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.UUID;
+import java.io.Serializable;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class UserEventData {
+@AllArgsConstructor
+public class Event<T, P> implements Serializable {
 
-    private UUID userId;
-    private String email;
+    private T eventType;
+    private P payload;
+
 }
