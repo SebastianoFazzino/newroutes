@@ -1,6 +1,5 @@
 package com.newroutes.services.user;
 
-import com.newroutes.config.rabbitmq.Message;
 import com.newroutes.config.rabbitmq.Producer;
 import com.newroutes.entities.user.ArchivedUser;
 import com.newroutes.entities.user.UserEntity;
@@ -11,6 +10,9 @@ import com.newroutes.exceptions.user.UserAlreadyExistsException;
 import com.newroutes.exceptions.user.UserNotFoundException;
 import com.newroutes.models.mappers.user.ArchivedUserMapper;
 import com.newroutes.models.mappers.user.UserMapper;
+import com.newroutes.models.rabbitmq.EventType;
+import com.newroutes.models.rabbitmq.UserEvent;
+import com.newroutes.models.rabbitmq.UserEventData;
 import com.newroutes.models.responses.utility.Deliverability;
 import com.newroutes.models.responses.utility.EmailValidationResponse;
 import com.newroutes.models.user.User;
@@ -214,11 +216,9 @@ public class UserService implements UserDetailsService {
                 String.format("New login from application %s and ip %s", loginSource, ip)
         );
 
-        Message<String> message = new Message<>();
-        message.setMessageType("login");
-        message.setPayload("Login");
-
-        producer.sendMessage(message);
+        UserEventData data = new UserEventData(user.getId(), user.getEmail());
+        UserEvent userEvent = new UserEvent(EventType.USER_LOGIN, data);
+        producer.sendUserEvent(userEvent);
     }
 
     //***********************************************************

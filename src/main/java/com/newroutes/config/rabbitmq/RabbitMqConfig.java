@@ -9,22 +9,23 @@ import org.springframework.context.annotation.Configuration;
 
 @Configuration
 public class RabbitMqConfig {
-    public static final String QUEUE_NAME = "q.test-queue";
-    public static final String EXCHANGE_NAME = "x.test-exchange";
+
+    public static final String USER_QUEUE = "user-queue";
+    public static final String USER_EXCHANGE = "user-exchange";
 
     @Bean
-    public Queue queue() {
-        return new Queue(QUEUE_NAME, false);
+    public Queue userQueue() {
+        return new Queue(USER_QUEUE, false);
     }
 
     @Bean
-    public DirectExchange exchange() {
-        return new DirectExchange(EXCHANGE_NAME, false, true);
+    public DirectExchange userExchange() {
+        return new DirectExchange(USER_EXCHANGE, false, true);
     }
 
     @Bean
-    Binding binding(Queue queue, DirectExchange exchange) {
-        return BindingBuilder.bind(queue).to(exchange).withQueueName();
+    Binding userBinding() {
+        return BindingBuilder.bind(this.userQueue()).to(this.userExchange()).withQueueName();
     }
 
 }

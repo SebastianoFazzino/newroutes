@@ -5,14 +5,13 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
-import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class Message<T> implements Serializable {
+public class Event<T, P> implements Serializable {
 
-    private UUID id = UUID.randomUUID();
-    private String messageType;
-    private T payload;
+    private T eventType;
+    private P payload;
+
 }

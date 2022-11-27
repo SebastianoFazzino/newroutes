@@ -43,6 +43,13 @@ spring:
   config:
     import: optional:file:.env[.properties]
 
+  rabbitmq:
+    host: ${RABBITMQ_HOST}
+    virtual-host: ${RABBITMQ_VHOST}
+    username: ${RABBITMQ_USERNAME}
+    password: ${RABBITMQ_PASSWORD}
+    port: 5672
+
 springdoc:
   api-docs:
     enabled: true

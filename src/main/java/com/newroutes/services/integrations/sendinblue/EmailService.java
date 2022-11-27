@@ -18,7 +18,6 @@ public class EmailService {
 
     private final SendinblueService sendinblueService;
 
-
     public void sendWelcomeEmail(UUID userId, Long delay) {
 
         if (delay != null) {
