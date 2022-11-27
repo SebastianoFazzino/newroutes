@@ -9,10 +9,12 @@ import com.newroutes.models.rabbitmq.EventType;
 import com.newroutes.models.rabbitmq.notification.NotificationEvent;
 import com.newroutes.models.rabbitmq.notification.NotificationEventData;
 import com.newroutes.models.sendinblue.SendinBlueUser;
+import com.newroutes.models.sendinblue.SendinblueEvent;
 import com.newroutes.models.user.User;
 import com.newroutes.repositories.sendinblue.SendinblueUserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +26,7 @@ import sibApi.ContactsApi;
 import sibApi.TransactionalEmailsApi;
 import sibModel.*;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -233,12 +236,11 @@ public class SendinblueService {
 
     /**
      * Send transactional email
-     * @param email
-     * @param template
+     * @param event
      */
-    public void sendTransactionalEmail(String email, Template template) {
+    public void sendTransactionalEmail(SendinblueEvent event) {
 
-        log.info("[SIB] - Sending transactional email with template {} to {}", template, email);
+        log.info("[SIB] - Sending transactional email with template {} to {}", event.getTemplate(), event.getEmail());
 
         this.getApiClient();
         TransactionalEmailsApi api = new TransactionalEmailsApi();
@@ -246,11 +248,15 @@ public class SendinblueService {
         try {
 
             SendSmtpEmailTo to = new SendSmtpEmailTo();
-            to.setEmail(email);
+            to.setEmail(event.getEmail());
 
             SendSmtpEmail sendSmtpEmail = new SendSmtpEmail();
             sendSmtpEmail.to(List.of(to));
-            sendSmtpEmail.setTemplateId(template.getId());
+            sendSmtpEmail.setTemplateId(event.getTemplate().getId());
+
+            if ( !StringUtils.isEmpty(event.getParams()) ) {
+                sendSmtpEmail.setParams(event.getParams());
+            }
 
             CreateSmtpEmail response = api.sendTransacEmail(sendSmtpEmail);
             log.info("[SIB] - Response: '{}'", response);

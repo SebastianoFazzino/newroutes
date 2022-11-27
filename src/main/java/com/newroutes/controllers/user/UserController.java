@@ -43,6 +43,12 @@ public class UserController {
         return ResponseEntity.ok(HttpStatus.OK);
     }
 
+    @PreAuthorize("hasAuthority(@securityConfig.ADMIN)")
+    @GetMapping("/authToken/{authToken}")
+    public ResponseEntity<User> getUserByAuthToken(@PathVariable("authToken") String authToken) {
+        return ResponseEntity.ok(service.getByAuthToken(authToken));
+    }
+
     //*****************
     // Public endpoints
 

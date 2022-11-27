@@ -6,6 +6,8 @@ import com.newroutes.enums.user.*;
 import com.newroutes.models.BaseModel;
 import com.newroutes.models.countries.CountryCode;
 import lombok.*;
+import org.apache.commons.lang3.RandomStringUtils;
+import org.apache.commons.lang3.time.DateUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +22,8 @@ public class User extends BaseModel {
     private String username;
 
     private String email;
+
+    private boolean emailConfirmed = false;
 
     @JsonIgnore
     @ToString.Exclude
@@ -56,5 +60,17 @@ public class User extends BaseModel {
     private List<UserRole> roles = new ArrayList<>();
 
     private List<Log> logs = new ArrayList<>();
+
+
+    public void generateAuthToken() {
+        String authToken = RandomStringUtils.random(24, true, true);
+        this.setAuthToken(authToken.toUpperCase());
+        this.setLastAuth(new Date());
+    }
+
+    public boolean validateToken() {
+        if (this.lastAuth == null) return false;
+        return this.lastAuth.before(DateUtils.addMinutes(this.lastAuth, 30));
+    }
 
 }

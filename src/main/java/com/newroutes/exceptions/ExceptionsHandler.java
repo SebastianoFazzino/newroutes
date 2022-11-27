@@ -3,10 +3,7 @@ package com.newroutes.exceptions;
 import com.newroutes.exceptions.post.CommentNotFoundException;
 import com.newroutes.exceptions.post.PostNotFoundException;
 import com.newroutes.exceptions.post.PostReactionNotFoundException;
-import com.newroutes.exceptions.user.BadCredentialException;
-import com.newroutes.exceptions.user.EmailNotValidException;
-import com.newroutes.exceptions.user.UserAlreadyExistsException;
-import com.newroutes.exceptions.user.UserNotFoundException;
+import com.newroutes.exceptions.user.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -46,6 +43,13 @@ public class ExceptionsHandler {
             UserAlreadyExistsException exception) {
         log.warn(exception.getMessage());
         return new ResponseEntity<>(exception.getMessage(), HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(TokenExpiredException.class)
+    public ResponseEntity<Object> handleTokenExpiredException(
+            TokenExpiredException exception) {
+        log.warn(exception.getMessage());
+        return new ResponseEntity<>(exception.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 
     //********************************************************************************

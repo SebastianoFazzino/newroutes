@@ -7,6 +7,7 @@ import com.newroutes.models.responses.user.AuthenticationResponse;
 import com.newroutes.services.user.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.UUID;
 
 @Slf4j
 @RestController
@@ -38,7 +40,7 @@ public class AuthenticationController {
         tokenUtils.refreshToken(request, response);
     }
 
-    @PostMapping("/login")
+    @PostMapping("/public/login")
     public ResponseEntity<AuthenticationResponse> login(
             @RequestBody AuthenticationRequest authenticationRequest, HttpServletRequest request) {
 
@@ -70,6 +72,12 @@ public class AuthenticationController {
             throw new BadCredentialException(String.format(
                     "Bad Credentials, either User '%s' does not exist or password is wrong", username));
         }
+    }
+
+    @PostMapping("/public/email-confirm/{userId}")
+    public ResponseEntity<Object> confirmEmail(@PathVariable("userId") UUID userId) {
+        userService.confirmEmail(userId);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
 }

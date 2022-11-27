@@ -6,13 +6,13 @@ import com.newroutes.entities.user.UserEntity;
 import com.newroutes.enums.user.LogOperationType;
 import com.newroutes.enums.user.LoginSource;
 import com.newroutes.exceptions.user.EmailNotValidException;
+import com.newroutes.exceptions.user.TokenExpiredException;
 import com.newroutes.exceptions.user.UserAlreadyExistsException;
 import com.newroutes.exceptions.user.UserNotFoundException;
 import com.newroutes.models.mappers.user.ArchivedUserMapper;
 import com.newroutes.models.mappers.user.UserMapper;
 import com.newroutes.models.rabbitmq.EventType;
 import com.newroutes.models.rabbitmq.user.UserEvent;
-import com.newroutes.models.rabbitmq.user.UserEventData;
 import com.newroutes.models.responses.utility.Deliverability;
 import com.newroutes.models.responses.utility.EmailValidationResponse;
 import com.newroutes.models.user.User;
@@ -20,7 +20,6 @@ import com.newroutes.models.user.UserSignupData;
 import com.newroutes.repositories.user.ArchivedUserRepository;
 import com.newroutes.repositories.user.UserRepository;
 import com.newroutes.services.integrations.AbstractApiService;
-import com.newroutes.services.integrations.sendinblue.SendinblueService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -47,7 +46,6 @@ public class UserService implements UserDetailsService {
     private final UserRoleService userRoleService;
     private final LogService logService;
     private final BCryptPasswordEncoder passwordEncoder;
-    private final SendinblueService sendinblueService;
     private final AbstractApiService abstractApiService;
     private final Producer producer;
 
@@ -86,6 +84,25 @@ public class UserService implements UserDetailsService {
         }
 
         return userMapper.convertToDto(user.get());
+    }
+
+    public User getByAuthToken(String authToken) {
+
+        log.info("Getting User by authToken {}", authToken);
+        Optional<UserEntity> user = userRepository.findByAuthToken(authToken);
+
+        if ( user.isEmpty() ) {
+            throw new UserNotFoundException(String.format("No User found for authToken %s", authToken));
+        }
+
+        return userMapper.convertToDto(user.get());
+    }
+
+    public String getAuthTokenForUser(UUID userId) {
+
+        log.info("Getting authToken for User {}", userId);
+        User user = this.getById(userId);
+        return user.getAuthToken();
     }
 
     public List<User> getAll() {
@@ -146,6 +163,7 @@ public class UserService implements UserDetailsService {
         User user = new User();
         userMapper.mergeSignupData(signupData, user);
         user.setPassword(passwordEncoder.encode(user.getPassword()));
+        user.generateAuthToken();
 
         User savedUser = this.save(user);
 
@@ -154,14 +172,11 @@ public class UserService implements UserDetailsService {
         userRoleService.addRole(savedUser);
 
         //**************************************************
-        // Creating signup log
-
         logService.addLog(
                 savedUser.getId(),
                 LogOperationType.USER_SIGNUP,
                 String.format("User '%s' successfully signed up", user.getEmail())
         );
-
         //**************************************************
 
         return savedUser;
@@ -216,16 +231,39 @@ public class UserService implements UserDetailsService {
     }
 
     //***********************************************************
-    // rabbitmq
-
-    private void sendUserEvent(EventType type, User user) {
-        UserEventData data = new UserEventData(user);
-        UserEvent userEvent = new UserEvent(type, data);
-        producer.sendUserEvent(userEvent);
-    }
-
-    //***********************************************************
     // Security
+
+    /**
+     * Confirm User's email
+     * @param userId
+     */
+    public void confirmEmail(UUID userId) {
+
+        User user = this.getById(userId);
+
+        log.info("Requested confirm email for User {}", user.getEmail());
+
+        if ( user.isEmailConfirmed() ) {
+            log.info("Email already confirmed for User {}", user.getEmail());
+        }
+
+        if ( !user.validateToken() ) {
+            throw new TokenExpiredException("Auth token is expired");
+        }
+
+        user.setEmailConfirmed(true);
+        User savedUser = this.save(user);
+
+        //**********************************************
+        logService.addLog(
+                userId,
+                LogOperationType.EMAIL_CONFIRMED,
+                "Email successfully confirmed"
+                );
+        //**********************************************
+
+        this.sendUserEvent(EventType.EMAIL_CONFIRMED, savedUser);
+    }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UserNotFoundException {
@@ -239,5 +277,13 @@ public class UserService implements UserDetailsService {
         return new org.springframework.security.core.userdetails.User(
                 user.getEmail(), user.getPassword(), authorities
         );
+    }
+
+    //***********************************************************
+    // rabbitmq
+
+    private void sendUserEvent(EventType type, User user) {
+        UserEvent userEvent = new UserEvent(type, user);
+        producer.sendUserEvent(userEvent);
     }
 }

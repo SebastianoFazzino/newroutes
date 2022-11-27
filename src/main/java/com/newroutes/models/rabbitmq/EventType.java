@@ -7,6 +7,7 @@ public enum EventType {
     USER_LOGIN,
     UPDATE_USER,
     DELETE_USER,
+    EMAIL_CONFIRMED,
 
     //sendinblue
     CONTACT_CREATED

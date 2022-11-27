@@ -5,7 +5,7 @@ import com.google.gson.reflect.TypeToken;
 import com.newroutes.models.rabbitmq.notification.NotificationEvent;
 import com.newroutes.models.rabbitmq.notification.NotificationEventData;
 import com.newroutes.models.rabbitmq.user.UserEvent;
-import com.newroutes.models.rabbitmq.user.UserEventData;
+import com.newroutes.models.user.User;
 import com.newroutes.services.integrations.sendinblue.EmailService;
 import com.newroutes.services.integrations.sendinblue.SendinblueService;
 import lombok.RequiredArgsConstructor;
@@ -32,15 +32,13 @@ public class Consumer {
 
             Gson gson = new Gson();
             UserEvent userEvent = gson.fromJson(event, new TypeToken<UserEvent>() {}.getType());
-            UserEventData data = userEvent.getPayload();
-
-            log.info("Processing User event {} of type {}", data, userEvent.getEventType());
+            User user = userEvent.getPayload();
 
             switch (userEvent.getEventType()) {
 
-                case USER_SIGNUP -> sendinblueService.createContact(data.getUser());
-                case USER_LOGIN, UPDATE_USER -> sendinblueService.updateContact(data.getUser());
-                case DELETE_USER -> sendinblueService.deleteContact(data.getUser());
+                case USER_SIGNUP -> sendinblueService.createContact(user);
+                case USER_LOGIN, UPDATE_USER -> sendinblueService.updateContact(user);
+                case DELETE_USER -> sendinblueService.deleteContact(user);
             }
 
         } catch (Exception e) {
@@ -57,8 +55,6 @@ public class Consumer {
             Gson gson = new Gson();
             NotificationEvent notificationEvent = gson.fromJson(event, new TypeToken<NotificationEvent>() {}.getType());
             NotificationEventData data = notificationEvent.getPayload();
-
-            log.info("Processing Notification event {} of type {}", data, notificationEvent.getEventType());
 
             switch (notificationEvent.getEventType()) {
 
